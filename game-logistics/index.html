@@ -187,6 +187,7 @@
                 <button type="button" class="btn" id="tbtn-work" onclick="showTab('work')">🚢 Sàn Lô Hàng</button>
                 <button type="button" class="btn btn-sub" id="tbtn-study" onclick="showTab('study')">🎓 Học Chứng Chỉ</button>
                 <button type="button" class="btn btn-sub" id="tbtn-pay" onclick="showTab('pay')">📊 Bảng Lương</button>
+                <button type="button" class="btn btn-sub" id="tbtn-rank" onclick="showTab('rank')">🏆 BXH</button>
             </div>
             <div id="notice-box" class="notice-box"></div>
             <!-- TAB 1: SÀN LÔ HÀNG -->
@@ -231,10 +232,35 @@
                     </table>
                 </div>
             </div>
+            <!-- TAB 4: BẢNG XẾP HẠNG -->
+            <div id="tab-rank" class="card" style="display: none;">
+                <div style="font-weight: bold; font-size: 14px; color: #0369a1; margin-bottom: 6px;">🏆 Bảng Xếp Hạng Người Chơi</div>
+                <div style="font-size: 12px; color: #475569; line-height: 1.5; margin-bottom: 8px;">
+                    Bấm <b>Gửi điểm</b> để lên bảng. Tên, số tiền mặt và số lô hoàn thành của bạn sẽ hiển thị <b>công khai</b>. Gửi lại bất cứ lúc nào để cập nhật điểm.
+                </div>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
+                    <button type="button" class="btn" style="flex: 1; min-width: 130px; font-size: 12px;" onclick="submitScore()">📤 Gửi điểm của tôi</button>
+                    <button type="button" class="btn btn-sub" style="flex: 1; min-width: 130px; font-size: 12px;" onclick="loadLeaderboard()">🔄 Tải lại bảng</button>
+                </div>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
+                    <button type="button" class="btn" id="lb-sort-money" style="flex: 1; min-width: 130px; font-size: 12px;" onclick="setLbSort('money')">💵 Xếp theo tiền</button>
+                    <button type="button" class="btn btn-sub" id="lb-sort-done" style="flex: 1; min-width: 130px; font-size: 12px;" onclick="setLbSort('done')">📦 Xếp theo số lô</button>
+                </div>
+                <div id="lb-msg" style="font-size: 12px; font-weight: 600; line-height: 1.5; min-height: 16px; margin-bottom: 6px;"></div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead><tr><th>#</th><th>Tên</th><th>Tiền mặt</th><th>Số lô</th></tr></thead>
+                        <tbody id="lb-body"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 <script>
+    // ===== DÁN LINK GOOGLE APPS SCRIPT (kết thúc bằng /exec) VÀO ĐÂY ĐỂ BẬT BẢNG XẾP HẠNG =====
+    var LEADERBOARD_URL = "https://script.google.com/macros/s/AKfycbyZTc7UMV3xvRspdNUsnQYUVdDM4RaBGlcvtfBufO5mGQdK_eO-jol17pFqax7yOV7SmA/exec";
+    // =========================================================================================
     function fmt(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
     function shuffleArray(arr) {
         var copy = arr.slice();
@@ -288,7 +314,7 @@
             done: 0, comm: 0, fine: 0, day: 1, month: 10, year: 2026,
             hour: 8, min: 0, payoutDays: 3, resetLeft: 3, resetCycleDays: 5,
             courses: [], apiKey: "", curOrder: null, curStep: 0, correctCount: 0, wrongCount: 0,
-            lastSalary: ""
+            lastSalary: "", pid: ""
         };
     }
     var s = defaultState();
@@ -299,6 +325,7 @@
         document.getElementById('game-screen').style.display = 'block';
         var inp = document.getElementById('inp-name').value;
         if (inp && inp.trim() !== "") s.name = inp.trim();
+        if (!s.pid) s.pid = genPid();
         generateDiverseOrders();
         refreshUI();
         startClock();
@@ -598,7 +625,7 @@
         box.innerHTML = msg;
     }
     function showTab(t) {
-        var tabs = ['work', 'study', 'pay'];
+        var tabs = ['work', 'study', 'pay', 'rank'];
         for (var i = 0; i < tabs.length; i++) {
             var id = tabs[i];
             document.getElementById('tab-' + id).style.display = (id === t) ? 'block' : 'none';
@@ -606,6 +633,7 @@
         }
         if (t === 'study') renderCourses();
         if (t === 'pay') renderPayroll();
+        if (t === 'rank') loadLeaderboard();
     }
     function toggleSettings() {
         var box = document.getElementById('settings-box');
@@ -746,6 +774,7 @@
         ns.resetLeft = Math.round(clampNum(d.resetLeft, 3, 0, 3));
         ns.resetCycleDays = Math.round(clampNum(d.resetCycleDays, 5, 1, 5));
         ns.lastSalary = cleanText(d.lastSalary, "", 10);
+        ns.pid = (typeof d.pid === "string" && /^[a-z0-9]{8,20}$/.test(d.pid)) ? d.pid : genPid();
         ns.courses = [];
         if (Array.isArray(d.courses)) {
             COURSES.forEach(function(c) { if (d.courses.indexOf(c.id) !== -1) ns.courses.push(c.id); });
@@ -790,6 +819,90 @@
         box.style.display = 'block';
         box.scrollIntoView();
         document.getElementById('inp-backup').focus();
+    }
+
+    // ================= BẢNG XẾP HẠNG (Google Sheets) =================
+    var lbSort = "money";
+    var lbConsent = false;
+    var lastSubmitAt = 0;
+
+    function genPid() {
+        var chars = "abcdefghijklmnopqrstuvwxyz0123456789", out = "";
+        var arr = new Uint8Array(12);
+        if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(arr);
+        else for (var k = 0; k < arr.length; k++) arr[k] = Math.floor(Math.random() * 256);
+        for (var i = 0; i < arr.length; i++) out += chars.charAt(arr[i] % chars.length);
+        return out;
+    }
+    function escHtml(v) {
+        var map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+        return String(v).replace(/[&<>"']/g, function(c) { return map[c]; });
+    }
+    function lbMsg(msg, isError) {
+        var el = document.getElementById('lb-msg');
+        el.style.color = isError ? '#991b1b' : '#166534';
+        el.innerText = msg;
+    }
+    function lbRequest(params) {
+        var q = [];
+        for (var k in params) q.push(encodeURIComponent(k) + "=" + encodeURIComponent(params[k]));
+        var url = LEADERBOARD_URL + (LEADERBOARD_URL.indexOf("?") === -1 ? "?" : "&") + q.join("&");
+        return fetch(url).then(function(r) { return r.json(); });
+    }
+    function lbConfigured() {
+        if (LEADERBOARD_URL) return true;
+        lbMsg("⚙️ Bảng xếp hạng chưa được bật: hãy dán link Google Apps Script vào dòng LEADERBOARD_URL ở đầu phần <script>.", true);
+        return false;
+    }
+    function setLbSort(mode) {
+        lbSort = mode;
+        document.getElementById('lb-sort-money').className = (mode === 'money') ? 'btn' : 'btn btn-sub';
+        document.getElementById('lb-sort-done').className = (mode === 'done') ? 'btn' : 'btn btn-sub';
+        loadLeaderboard();
+    }
+    function submitScore() {
+        if (!lbConfigured()) return;
+        var now = Date.now();
+        if (now - lastSubmitAt < 15000) { lbMsg("⏳ Vui lòng chờ vài giây rồi gửi lại.", true); return; }
+        if (!lbConsent) {
+            if (!confirm("Tên, tiền mặt và số lô hoàn thành của bạn sẽ hiển thị CÔNG KHAI trên bảng xếp hạng. Tiếp tục gửi?")) return;
+            lbConsent = true;
+        }
+        lastSubmitAt = now;
+        lbMsg("⏳ Đang gửi điểm...", false);
+        lbRequest({ action: "submit", pid: s.pid, name: s.name, money: Math.round(s.money), done: s.done })
+            .then(function(res) {
+                if (!res || !res.ok) throw new Error((res && res.error) || "Máy chủ từ chối");
+                return loadLeaderboard("✅ Đã gửi điểm thành công!");
+            })
+            .catch(function(e) {
+                lastSubmitAt = 0;
+                lbMsg("❌ Gửi điểm thất bại: " + e.message, true);
+            });
+    }
+    function loadLeaderboard(okMsg) {
+        if (!lbConfigured()) return Promise.resolve();
+        if (typeof okMsg !== "string") okMsg = "";
+        if (!okMsg) lbMsg("⏳ Đang tải bảng xếp hạng...", false);
+        return lbRequest({ action: "top", sort: lbSort, pid: s.pid })
+            .then(function(res) {
+                if (!res || !res.ok) throw new Error((res && res.error) || "Dữ liệu không hợp lệ");
+                var medals = ["🥇", "🥈", "🥉"];
+                var html = "";
+                for (var i = 0; i < res.list.length; i++) {
+                    var r = res.list[i];
+                    html += '<tr class="' + (r.me ? 'cur-row' : '') + '"><td>' + (medals[r.rank - 1] || r.rank) + '</td>' +
+                        '<td>' + escHtml(r.name) + (r.me ? ' (Bạn)' : '') + '</td>' +
+                        '<td>' + fmt(Number(r.money) || 0) + 'đ</td><td>' + (Number(r.done) || 0) + '</td></tr>';
+                }
+                if (!html) html = '<tr><td colspan="4" style="text-align:center;">Chưa có ai trên bảng. Hãy là người đầu tiên!</td></tr>';
+                document.getElementById('lb-body').innerHTML = html;
+                var mine = res.myRank ? " Hạng của bạn: #" + res.myRank + "/" + res.total + "." : (res.total ? " Bạn chưa có trên bảng (" + res.total + " người chơi)." : "");
+                lbMsg((okMsg ? okMsg + " " : "") + "🏆" + mine, false);
+            })
+            .catch(function(e) {
+                lbMsg("❌ Không tải được bảng xếp hạng: " + e.message, true);
+            });
     }
     function resetFullGame() {
         if (confirm("Reset lại từ đầu?")) { location.reload(); }

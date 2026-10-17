@@ -3,205 +3,612 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vietnam Logistics Simulator 4.0 - Mobile & PC Optimized</title>
+    <title>Vietnam Logistics Simulator 4.5 - Chuyên Nghiệp & Chống Lặp Câu</title>
+    <!-- Font chữ hiện đại -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f0f7ff; color: #0f172a; margin: 0; padding: 0; }
-        /* MÀN HÌNH CHỜ (LOBBY) CHO CẢ PC VÀ MOBILE */
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --primary-light: #e0f2fe;
+            --secondary: #6366f1;
+            --success: #16a34a;
+            --success-light: #dcfce7;
+            --warning: #d97706;
+            --warning-light: #fef3c7;
+            --danger: #dc2626;
+            --danger-light: #fee2e2;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-ui: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            background-image: radial-gradient(at 0% 0%, rgba(2, 132, 199, 0.08) 0px, transparent 50%),
+                              radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.06) 0px, transparent 50%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* MÀN HÌNH CHỜ (LOBBY) */
         #lobby-screen {
-            max-width: 500px; width: 92%; margin: 30px auto; background: #ffffff;
-            border: 2px solid #7dd3fc; border-radius: 16px; padding: 22px;
-            text-align: center; box-shadow: 0 10px 25px rgba(2, 132, 199, 0.12);
+            max-width: 520px;
+            width: 92%;
+            margin: 40px auto;
+            background: var(--bg-card);
+            border: 1px solid rgba(2, 132, 199, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            animation: fadeIn 0.3s ease-out;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
         .starter-box {
-            background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px;
-            padding: 12px; text-align: left; font-size: 13px; margin: 14px 0; line-height: 1.6;
+            background: #f8fafc;
+            border: 1px solid #bae6fd;
+            border-radius: var(--radius-md);
+            padding: 14px;
+            text-align: left;
+            font-size: 13px;
+            margin: 16px 0;
+            line-height: 1.6;
+            color: #334155;
         }
-        /* MÀN HÌNH CHÍNH */
+
+        /* MÀN HÌNH GAME CHÍNH */
         #game-screen { display: none; width: 100%; }
+
         .topbar {
-            background: #ffffff; border-bottom: 2px solid #bae6fd; padding: 10px 14px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
-            position: sticky; top: 0; z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-ui);
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
         }
-        .brand { font-weight: 800; font-size: 16px; color: #0369a1; }
+
+        .brand {
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .clock-badge {
-            background: #e0f2fe; color: #0369a1; padding: 5px 10px;
-            border-radius: 16px; font-weight: bold; font-size: 12px; border: 1px solid #7dd3fc;
+            background: #f0f9ff;
+            color: #0369a1;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 12px;
+            border: 1px solid #bae6fd;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        /* BỐ CỤC LINH HOẠT: TỰ ĐỘNG CHUYỂN MÀN HÌNH DỌC TRÊN ĐIỆN THOẠI */
+
         .layout {
-            max-width: 1200px; margin: 12px auto; padding: 0 10px;
-            display: grid; grid-template-columns: 300px 1fr; gap: 12px;
+            max-width: 1240px;
+            margin: 14px auto;
+            padding: 0 12px;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 14px;
         }
-        @media (max-width: 850px) {
-            .layout { grid-template-columns: 1fr; } /* Ép thành 1 cột dọc trên điện thoại */
-            .topbar { padding: 8px 10px; }
-            .clock-badge { font-size: 11px; width: 100%; text-align: center; order: 3; }
+
+        @media (max-width: 880px) {
+            .layout { grid-template-columns: 1fr; }
+            .topbar { padding: 8px 12px; }
+            .clock-badge { font-size: 11px; width: 100%; justify-content: center; order: 3; }
         }
+
         .card {
-            background: #ffffff; border: 1px solid #bae6fd; border-radius: 12px;
-            padding: 14px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.04);
+            background: var(--bg-card);
+            border: 1px solid var(--border-ui);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s ease;
         }
-        .row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 1px dashed #e2e8f0; }
-        .bar-wrap { width: 100%; height: 9px; background: #e2e8f0; border-radius: 5px; overflow: hidden; margin: 4px 0 10px; }
-        .bar-fill { height: 100%; }
-        .tag { font-size: 11px; padding: 2px 6px; border-radius: 6px; font-weight: bold; }
-        .tag-red { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-        .tag-norm { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
-        .tag-good { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            padding: 6px 0;
+            border-bottom: 1px dashed #f1f5f9;
+        }
+
+        .row:last-child { border-bottom: none; }
+
+        .bar-wrap {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 4px 0 10px;
+        }
+
+        .bar-fill {
+            height: 100%;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        .tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .tag-red { background: var(--danger-light); color: var(--danger); border: 1px solid #fecaca; }
+        .tag-norm { background: var(--warning-light); color: var(--warning); border: 1px solid #fde68a; }
+        .tag-good { background: var(--success-light); color: var(--success); border: 1px solid #bbf7d0; }
+
         .btn {
-            background: #0284c7; color: #ffffff; border: none; padding: 10px 14px;
-            border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.15s;
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: #ffffff;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform 0.1s ease, filter 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
-        .btn:hover { background: #0369a1; }
-        .btn:disabled { background: #94a3b8; cursor: not-allowed; }
-        .btn-sub { background: #ffffff; color: #0369a1; border: 1px solid #0284c7; }
-        .btn-sub:hover { background: #e0f2fe; }
-        .btn-danger { background: #dc2626; color: #ffffff; }
-        .btn-ai { background: #7c3aed; color: #ffffff; }
+
+        .btn:hover:not(:disabled) {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        .btn:disabled {
+            background: #cbd5e1 !important;
+            color: #64748b !important;
+            cursor: not-allowed;
+            transform: none !important;
+            filter: none !important;
+        }
+
+        .btn-sub {
+            background: #ffffff;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
+
+        .btn-sub:hover:not(:disabled) {
+            background: #f0f9ff;
+            border-color: #0284c7;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+        }
+
+        .btn-ai {
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            color: #ffffff;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #ffffff;
+        }
+
         .notice-box {
-            display: none; padding: 12px 14px; border-radius: 10px; margin-bottom: 12px;
-            font-size: 13px; font-weight: 600; line-height: 1.5;
+            display: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.5;
+            animation: fadeIn 0.25s ease-out;
         }
-        .tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-        .tabs .btn, .tabs .btn-sub { flex: 1; min-width: 110px; text-align: center; padding: 8px 10px; font-size: 12px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } } /* Điện thoại hiển thị 1 cột thẻ đơn hàng */
+
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tabs .btn, .tabs .btn-sub {
+            flex: 1;
+            min-width: 110px;
+            text-align: center;
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 680px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
         .item-box {
-            background: #f8fafc; border: 1px solid #bae6fd; border-radius: 10px;
-            padding: 12px; display: flex; flex-direction: column; justify-content: space-between;
+            background: #ffffff;
+            border: 1px solid var(--border-ui);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
         }
-        .item-box.hard-order { border-left: 4px solid #7c3aed; }
-        .item-box.easy-order { border-left: 4px solid #0284c7; }
+
+        .item-box:hover {
+            border-color: #7dd3fc;
+            box-shadow: var(--shadow-md);
+        }
+
+        .item-box.hard-order {
+            border-left: 5px solid #8b5cf6;
+            background: linear-gradient(to right, #faf5ff, #ffffff);
+        }
+
+        .item-box.easy-order {
+            border-left: 5px solid #0284c7;
+            background: linear-gradient(to right, #f0f9ff, #ffffff);
+        }
+
+        /* Nút lựa chọn câu hỏi */
         .opt-btn {
-            display: block; width: 100%; text-align: left; background: #ffffff;
-            border: 1px solid #7dd3fc; padding: 12px 14px; border-radius: 8px;
-            margin-top: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
         }
-        .opt-btn:hover { background: #e0f2fe; border-color: #0284c7; }
+
+        .opt-btn:hover:not(:disabled) {
+            background: #f0f9ff;
+            border-color: #0284c7;
+            transform: translateX(3px);
+        }
+
+        .opt-btn.correct-opt {
+            background: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #14532d !important;
+            font-weight: 700;
+        }
+
+        .opt-btn.wrong-opt {
+            background: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #7f1d1d !important;
+        }
+
+        .opt-btn:disabled {
+            cursor: default;
+            transform: none !important;
+        }
+
         .quiz-status-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #e0f2fe; padding: 10px 12px; border-radius: 8px; margin-bottom: 10px;
-            font-size: 12.5px; font-weight: bold; color: #0369a1; flex-wrap: wrap; gap: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #e0f2fe;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #0369a1;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-top: 6px; }
-        th, td { border: 1px solid #cbd5e1; padding: 6px; text-align: left; }
-        th { background: #e0f2fe; color: #0369a1; }
-        .cur-row { background: #dcfce7; font-weight: bold; }
+
+        .explanation-card {
+            background: #fffbeb;
+            border: 1.5px solid #f59e0b;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-top: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #92400e;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: #334155;
+            font-weight: 700;
+        }
+
+        .cur-row {
+            background: #ecfdf5;
+            font-weight: 700;
+            color: #065f46;
+        }
+
         #settings-box {
-            display: none; background: #f8fafc; border: 2px solid #0284c7;
-            padding: 14px; border-radius: 12px; margin-bottom: 12px;
+            display: none;
+            background: #ffffff;
+            border: 2px solid #0284c7;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .input-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            transition: border-color 0.15s ease;
+        }
+
+        .input-control:focus {
+            outline: none;
+            border-color: #0284c7;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+
+        .badge-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 20px;
+        }
+
+        /* Sound Button */
+        .sound-toggle {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            border: 1px solid #cbd5e1;
+            background: #fff;
         }
     </style>
 </head>
 <body>
-<!-- MÀN HÌNH CHỜ -->
+
+<!-- MÀN HÌNH CHỜ (LOBBY) -->
 <div id="lobby-screen">
-    <div style="font-size: 40px;">🚢</div>
-    <h2 style="margin: 6px 0 4px; color: #0369a1; font-size: 20px;">VIETNAM LOGISTICS SIMULATOR 4.0</h2>
-    <div style="font-size: 12.5px; color: #475569;">Tối ưu hóa hoàn hảo cho Điện thoại (Màn hình dọc) & Laptop (PC)</div>
+    <div style="font-size: 48px; margin-bottom: 8px;">🚢</div>
+    <div class="hero-badge">PHIÊN BẢN CHUẨN 4.5 • CHỐNG LẶP CÂU HỎI</div>
+    <h2 style="margin: 0 0 6px; color: #0369a1; font-size: 22px; font-weight: 800;">VIETNAM LOGISTICS SIMULATOR</h2>
+    <div style="font-size: 13px; color: #64748b;">Mô phỏng Nghiệp vụ Xuất Nhập Khẩu & Quản trị Chuỗi Cung Ứng Thực Chiến</div>
+
     <div class="starter-box">
-        <b>🎁 QUÀ TÂN THỦ:</b><br>
-        • Chức vụ: <b>Thực tập sinh</b> (Lương 1tr, chiết khấu <b>0.5%</b>/lô)<br>
-        • Vốn: <b>1.000.000đ</b> | Xe: <b>Wave cũ (30km/lít xăng)</b><br>
-        • 6 Câu hỏi A-B-C-D mỗi lô (Đúng ≥ 5/6 câu mới hoàn thành).
+        <b>🎁 GÓI KHỞI NGHIỆP TÂN THỦ:</b><br>
+        • Chức vụ: <b>Thực tập sinh</b> (Lương 1.000.000đ, chiết khấu <b>0.5%</b>/lô)<br>
+        • Vốn: <b>1.000.000đ</b> | Phương tiện: <b>Wave Cũ (30km/1 lít xăng)</b><br>
+        • Ngân hàng <b>60+ câu hỏi chuyên nghiệp</b> phân bổ thông minh, <b>không trùng lặp</b>, triệt tiêu bug spam cày farm điểm/tiền.<br>
+        • Điều kiện thông quan: Đúng <b>≥ 5/6 câu</b> mỗi lô hàng.
     </div>
-    <div style="margin-bottom: 12px;">
-        <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">Tên nhân viên:</label>
-        <input type="text" id="inp-name" value="Huy Nguyễn" style="width: 100%; padding: 10px; border: 1px solid #0284c7; border-radius: 8px; text-align: center; font-size: 14px; font-weight: bold;">
+
+    <div style="margin-bottom: 14px; text-align: left;">
+        <label style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px; color: #334155;">Họ và Tên Nhân Viên:</label>
+        <input type="text" id="inp-name" value="Huy Nguyễn" class="input-control" style="text-align: center; font-weight: 700; font-size: 15px;">
     </div>
-    <button type="button" class="btn" style="width: 100%; padding: 12px; font-size: 15px;" onclick="startGameNow()">🚀 BẮT ĐẦU CHƠI NGAY</button>
-    <button type="button" class="btn btn-sub" style="width: 100%; padding: 10px; font-size: 13px; margin-top: 8px;" onclick="openRestoreFromLobby()">📥 Có mã sao lưu? Chơi tiếp ván cũ</button>
+
+    <button type="button" class="btn" style="width: 100%; padding: 13px; font-size: 15px;" onclick="startGameNow()">
+        🚀 BẮT ĐẦU VÀO CA LÀM VIỆC
+    </button>
+    <button type="button" class="btn btn-sub" style="width: 100%; padding: 10px; font-size: 13px; margin-top: 10px;" onclick="openRestoreFromLobby()">
+        📥 Đã có mã sao lưu? Khôi phục ván cũ
+    </button>
 </div>
+
 <!-- MÀN HÌNH GAME CHÍNH -->
 <div id="game-screen">
     <div class="topbar">
-        <div class="brand">📦 VietLogistics</div>
-        <div class="clock-badge">
-            <span id="ui-clock">📅 Ngày 01/10/2026 - 08:00</span> | Trả chiết khấu: <span id="ui-payout">3</span> ngày
+        <div class="brand">
+            <span>📦</span> <span>VietLogistics Pro</span>
         </div>
-        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button type="button" class="btn btn-sub" style="padding: 6px 10px; font-size: 11px;" onclick="nextDayManual()">⏩ 1 Ngày</button>
-            <button type="button" class="btn btn-sub" style="padding: 6px 10px; font-size: 11px;" onclick="toggleSettings()">⚙️ Cài đặt</button>
-            <button type="button" class="btn btn-danger" style="padding: 6px 10px; font-size: 11px;" onclick="resetFullGame()">🔄 Reset</button>
+        <div class="clock-badge">
+            <span id="ui-clock">📅 Ngày 01/10/2026 - 08:00</span>
+            <span>•</span>
+            <span>Chiết khấu: <b id="ui-payout">3</b> ngày nữa</span>
+        </div>
+        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            <button type="button" id="btn-sound" class="sound-toggle" onclick="toggleSound()">🔊 Bật</button>
+            <button type="button" class="btn btn-sub" style="padding: 6px 10px; font-size: 11.5px;" onclick="nextDayManual()">⏩ Sang Ngày</button>
+            <button type="button" class="btn btn-sub" style="padding: 6px 10px; font-size: 11.5px;" onclick="toggleSettings()">⚙️ Cài đặt</button>
+            <button type="button" class="btn btn-danger" style="padding: 6px 10px; font-size: 11.5px;" onclick="resetFullGame()">🔄 Reset</button>
         </div>
     </div>
+
     <div class="layout">
-        <!-- CỘT TRÁI (TỰ ĐỘNG XUỐNG DƯỚI TRÊN MOBILE) -->
+        <!-- CỘT TRÁI: THÔNG TIN NHÂN SỰ & XE -->
         <div>
             <div class="card">
-                <div style="font-size: 16px; font-weight: bold; color: #0369a1;" id="ui-name">Huy Nguyễn</div>
-                <div style="margin: 5px 0 8px;">
-                    <span class="btn" style="padding: 2px 8px; font-size: 11px;" id="ui-rank">Thực tập sinh</span>
-                    <span style="font-size: 11.5px; color: #475569;">(Xong: <b id="ui-done">0</b> lô)</span>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 16px; font-weight: 800; color: #0369a1;" id="ui-name">Huy Nguyễn</div>
+                    <span class="badge-pill" style="background:#e0f2fe; color:#0369a1;" id="ui-rank">Thực tập sinh</span>
                 </div>
-                <div style="font-size: 12px; font-weight: bold; display: flex; justify-content: space-between;">
-                    <span>⭐ Uy tín: <span id="ui-rep">10</span>/100</span>
-                    <span id="tag-rep" class="tag tag-red">Cảnh báo đỏ</span>
+                <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">
+                    Đã hoàn thành: <b id="ui-done" style="color:#0f172a;">0</b> lô hàng
                 </div>
-                <div class="bar-wrap"><div id="bar-rep" class="bar-fill" style="width: 10%; background: #dc2626;"></div></div>
-                <div style="font-size: 12px; font-weight: bold; display: flex; justify-content: space-between;">
-                    <span>📘 Thông thạo: <span id="ui-mas">30</span>/100</span>
-                    <span id="tag-mas" class="tag tag-red">Cảnh báo đỏ</span>
+
+                <div style="margin-top: 14px;">
+                    <div style="font-size: 12px; font-weight: 700; display: flex; justify-content: space-between;">
+                        <span>⭐ Điểm Uy Tín: <span id="ui-rep">10</span>/100</span>
+                        <span id="tag-rep" class="tag tag-red">Cảnh báo đỏ</span>
+                    </div>
+                    <div class="bar-wrap"><div id="bar-rep" class="bar-fill" style="width: 10%; background: #dc2626;"></div></div>
+
+                    <div style="font-size: 12px; font-weight: 700; display: flex; justify-content: space-between;">
+                        <span>📘 Độ Thông Thạo: <span id="ui-mas">30</span>/100</span>
+                        <span id="tag-mas" class="tag tag-red">Cảnh báo đỏ</span>
+                    </div>
+                    <div class="bar-wrap"><div id="bar-mas" class="bar-fill" style="width: 30%; background: #dc2626;"></div></div>
                 </div>
-                <div class="bar-wrap"><div id="bar-mas" class="bar-fill" style="width: 30%; background: #dc2626;"></div></div>
-                <div class="row"><span>💵 Tiền mặt:</span><b id="ui-money" style="color: #16a34a;">1,000,000đ</b></div>
-                <div class="row"><span>⏳ Chiết khấu chờ:</span><b id="ui-comm" style="color: #d97706;">0đ</b></div>
-                <div class="row"><span>💳 Lương cơ bản:</span><b id="ui-sal">1,000,000đ</b></div>
-                <div class="row"><span>📈 Tỷ lệ chiết khấu:</span><b id="ui-rate">0.5% / lô</b></div>
-                <div class="row"><span>⚠️ Biên bản phạt:</span><b id="ui-fine" style="color: #dc2626;">0đ</b></div>
+
+                <div class="row"><span>💵 Tiền mặt khả dụng:</span><b id="ui-money" style="color: #16a34a; font-size: 14px;">1,000,000đ</b></div>
+                <div class="row"><span>⏳ Hoa hồng tích lũy:</span><b id="ui-comm" style="color: #d97706;">0đ</b></div>
+                <div class="row"><span>💳 Lương chức danh:</span><b id="ui-sal">1,000,000đ</b></div>
+                <div class="row"><span>📈 Tỷ lệ hoa hồng:</span><b id="ui-rate">0.5% / lô</b></div>
+                <div class="row"><span>⚠️ Nợ biên bản phạt:</span><b id="ui-fine" style="color: #dc2626;">0đ</b></div>
             </div>
+
             <div class="card">
-                <div style="font-weight: bold; font-size: 13.5px; color: #0369a1; margin-bottom: 6px;">🛵 Xe Wave Cũ (30km / 1 lít xăng)</div>
-                <div class="row"><span>Giá xăng:</span><b>21,000đ / lít</b></div>
-                <div class="row"><span>Bình xăng:</span><b id="ui-fuel">2.0 lít (60 km)</b></div>
-                <button type="button" class="btn" style="width: 100%; margin-top: 8px;" onclick="buyFuel()">⛽ Đổ 2 lít xăng (-42,000đ)</button>
+                <div style="font-weight: 800; font-size: 13.5px; color: #0369a1; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>🛵 Xe Wave Đưa Đón Chứng Từ</span>
+                    <span style="font-size: 11px; color:#64748b;">30km/1L</span>
+                </div>
+                <div class="row"><span>Giá xăng A95:</span><b>21,000đ / lít</b></div>
+                <div class="row"><span>Nhiên liệu còn:</span><b id="ui-fuel" style="color:#0284c7;">2.0 lít (60 km)</b></div>
+                <button type="button" class="btn" style="width: 100%; margin-top: 10px;" onclick="buyFuel()">
+                    ⛽ Đổ 2 lít xăng (-42,000đ)
+                </button>
             </div>
         </div>
-        <!-- CỘT PHẢI: KHU VỰC LÀM VIỆC CHÍNH -->
+
+        <!-- CỘT PHẢI: KHU VỰC THAO TÁC CHÍNH -->
         <div>
-            <!-- Hộp Cài đặt -->
+            <!-- HỘP CÀI ĐẶT & BACKUP -->
             <div id="settings-box">
-                <div style="font-weight: bold; color: #0369a1; font-size: 14px; margin-bottom: 6px;">⚙️ Cài Đặt Gemini API & Hệ Thống</div>
-                <div style="display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
-                    <input type="password" id="inp-api-key" placeholder="Gemini API Key (Tùy chọn)" style="flex: 1; min-width: 180px; padding: 7px; border: 1px solid #94a3b8; border-radius: 6px; font-size: 12px;">
-                    <button type="button" class="btn" style="padding: 7px 10px; font-size: 12px;" onclick="saveApiKey()">💾 Lưu</button>
+                <div style="font-weight: 800; color: #0369a1; font-size: 14.5px; margin-bottom: 8px;">⚙️ Tích Hợp Gemini AI & Quản Trị Hệ Thống</div>
+                <div style="font-size: 12px; color: #64748b; margin-bottom: 8px;">
+                    Nhập Google Gemini API Key để kích hoạt tính năng sinh đơn hàng AI thời gian thực (Tùy chọn):
                 </div>
-                <div style="border-top: 1px dashed #94a3b8; margin: 4px 0 10px; padding-top: 10px;">
-                    <div style="font-weight: bold; color: #0369a1; font-size: 13.5px; margin-bottom: 4px;">💾 Mã Sao Lưu Ván Chơi</div>
-                    <div style="font-size: 12px; color: #475569; line-height: 1.5; margin-bottom: 8px;">
-                        Bấm <b>Tạo mã</b> để lưu lại ván đang chơi dở (kể cả khi đang làm dở một lô hàng). Lần sau dán mã vào ô bên dưới rồi bấm <b>Khôi phục</b>. Mã không chứa API Key.
-                    </div>
-                    <textarea id="inp-backup" rows="4" spellcheck="false" placeholder="Mã sao lưu sẽ hiện ở đây. Muốn chơi tiếp thì dán mã cũ vào ô này." style="width: 100%; padding: 8px; border: 1px solid #94a3b8; border-radius: 6px; font-size: 11.5px; font-family: Consolas, monospace; word-break: break-all; resize: vertical;"></textarea>
-                    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0;">
-                        <button type="button" class="btn" style="flex: 1; min-width: 110px; padding: 8px 10px; font-size: 12px;" onclick="createBackupCode()">📤 Tạo mã</button>
-                        <button type="button" class="btn btn-sub" style="flex: 1; min-width: 110px; padding: 8px 10px; font-size: 12px;" onclick="copyBackupCode()">📋 Sao chép</button>
-                        <button type="button" class="btn btn-ai" style="flex: 1; min-width: 110px; padding: 8px 10px; font-size: 12px;" onclick="restoreBackupCode()">📥 Khôi phục</button>
-                    </div>
-                    <div id="backup-msg" style="font-size: 12px; font-weight: 600; line-height: 1.5; min-height: 16px;"></div>
+                <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                    <input type="password" id="inp-api-key" placeholder="AIzaSy... (Gemini API Key)" class="input-control" style="flex: 1; min-width: 200px;">
+                    <button type="button" class="btn" style="padding: 8px 14px;" onclick="saveApiKey()">💾 Lưu Key</button>
                 </div>
-                <button type="button" class="btn btn-sub" style="width: 100%; font-size: 12px;" onclick="toggleSettings()">Đóng cài đặt</button>
+
+                <div style="border-top: 1px dashed #cbd5e1; margin: 12px 0; padding-top: 12px;">
+                    <div style="font-weight: 700; color: #0369a1; font-size: 13.5px; margin-bottom: 4px;">💾 Mã Sao Lưu Trạng Thái Ván Chơi</div>
+                    <div style="font-size: 12px; color: #64748b; line-height: 1.5; margin-bottom: 8px;">
+                        Mã bảo toàn toàn bộ tiền bạc, cấp bậc, đơn hàng đang làm dở và danh sách câu hỏi.
+                    </div>
+                    <textarea id="inp-backup" rows="3" spellcheck="false" placeholder="Mã sao lưu sẽ xuất hiện ở đây..." class="input-control" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; word-break: break-all; resize: vertical;"></textarea>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;">
+                        <button type="button" class="btn" style="flex: 1; min-width: 110px;" onclick="createBackupCode()">📤 Tạo mã</button>
+                        <button type="button" class="btn btn-sub" style="flex: 1; min-width: 110px;" onclick="copyBackupCode()">📋 Sao chép</button>
+                        <button type="button" class="btn btn-ai" style="flex: 1; min-width: 110px;" onclick="restoreBackupCode()">📥 Khôi phục</button>
+                    </div>
+                    <div id="backup-msg" style="font-size: 12px; font-weight: 600; line-height: 1.5; margin-top: 6px; min-height: 18px;"></div>
+                </div>
+                <button type="button" class="btn btn-sub" style="width: 100%;" onclick="toggleSettings()">Đóng cài đặt</button>
             </div>
+
+            <!-- TABS ĐIỀU HƯỚNG -->
             <div class="tabs">
                 <button type="button" class="btn" id="tbtn-work" onclick="showTab('work')">🚢 Sàn Lô Hàng</button>
                 <button type="button" class="btn btn-sub" id="tbtn-study" onclick="showTab('study')">🎓 Học Chứng Chỉ</button>
                 <button type="button" class="btn btn-sub" id="tbtn-pay" onclick="showTab('pay')">📊 Bảng Lương</button>
-                <button type="button" class="btn btn-sub" id="tbtn-rank" onclick="showTab('rank')">🏆 BXH</button>
+                <button type="button" class="btn btn-sub" id="tbtn-rank" onclick="showTab('rank')">🏆 Bảng Xếp Hạng</button>
             </div>
+
             <div id="notice-box" class="notice-box"></div>
-            <!-- TAB 1: SÀN LÔ HÀNG -->
+
+            <!-- TAB 1: SÀN LÔ HÀNG & PHÒNG THI NGHIỆP VỤ -->
             <div id="tab-work" class="card">
-                <div id="tutorial-box" style="background: #fffbeb; border: 1px solid #f59e0b; padding: 10px; border-radius: 8px; font-size: 12.5px; margin-bottom: 10px; color: #92400e; line-height: 1.5;"></div>
+                <div id="tutorial-box" style="background: #fffbeb; border: 1px solid #f59e0b; padding: 12px; border-radius: 10px; font-size: 12.5px; margin-bottom: 12px; color: #92400e; line-height: 1.5;"></div>
+
+                <!-- KHU VỰC THỰC HIỆN TRẮC NGHIỆM ĐƠN HÀNG (STEP AREA) -->
                 <div id="step-area" style="display: none;"></div>
+
+                <!-- DANH SÁCH SÀN GIAO DỊCH (LIST AREA) -->
                 <div id="list-area">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
-                        <span style="font-weight: bold; font-size: 14px; color: #0369a1;">📋 Sàn Giao Dịch Lô Hàng</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+                        <span style="font-weight: 800; font-size: 14.5px; color: #0369a1;">📋 Các Lô Hàng Đang Chờ Xử Lý Hải Quan</span>
                         <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                            <button type="button" class="btn btn-sub" style="padding: 6px 10px; font-size: 11.5px;" onclick="resetOrderBoard(false)">
-                                🔄 Reset (<span id="ui-reset-left">3</span>/3)
+                            <button type="button" class="btn btn-sub" style="padding: 7px 12px; font-size: 12px;" onclick="resetOrderBoard(false)">
+                                🔄 Đổi Lô (<span id="ui-reset-left">3</span>/3)
                             </button>
-                            <button type="button" class="btn btn-ai" style="padding: 6px 10px; font-size: 11.5px;" onclick="resetOrderBoard(true)">
+                            <button type="button" class="btn btn-ai" style="padding: 7px 12px; font-size: 12px;" onclick="resetOrderBoard(true)">
                                 ✨ Tạo Từ AI
                             </button>
                         </div>
@@ -209,47 +616,55 @@
                     <div class="grid-2" id="order-list"></div>
                 </div>
             </div>
+
             <!-- TAB 2: HỌC CHỨNG CHỈ -->
             <div id="tab-study" class="card" style="display: none;">
-                <div style="font-weight: bold; font-size: 14px; color: #0369a1; margin-bottom: 5px;">🎓 Đào Tạo Chứng Chỉ (10tr - 100tr)</div>
-                <p style="font-size: 12px; color: #475569; margin-top: 0;">Đạt Thông thạo ≥ 70 để mở khóa các lô hàng lớn ≥ 50 triệu đồng.</p>
+                <div style="font-weight: 800; font-size: 14.5px; color: #0369a1; margin-bottom: 4px;">🎓 Viện Đào Tạo Logistics & Chuỗi Cung Ứng Quốc Tế</div>
+                <p style="font-size: 12px; color: #64748b; margin-top: 0; line-height: 1.5;">
+                    Nâng cao độ Thông Thạo (≥ 70) để nhận các lô hàng giá trị cao từ 50.000.000đ trở lên và mở rộng kiến thức nghiệp vụ.
+                </p>
                 <div class="grid-2" id="course-list"></div>
             </div>
-            <!-- TAB 3: BẢNG LƯƠNG & CHỨC VỤ -->
+
+            <!-- TAB 3: BẢNG LƯƠNG & CHỨC DANH -->
             <div id="tab-pay" class="card" style="display: none;">
-                <div style="font-weight: bold; font-size: 14px; color: #0369a1; margin-bottom: 6px;">💵 Lương, Thuế TNCN & Chức Vụ</div>
-                <div id="payroll-box" style="background: #f0f9ff; padding: 10px; border-radius: 8px; font-size: 12px; line-height: 1.6; margin-bottom: 10px; border: 1px solid #bae6fd;"></div>
-                <button type="button" class="btn" style="width: 100%; font-size: 12px;" onclick="claimMonthlySalary()">🏦 Quyết Toán Lương Cuối Tháng</button>
-                <div style="font-weight: bold; font-size: 13px; color: #0369a1; margin: 14px 0 6px;">📈 Thang Chức Vụ</div>
+                <div style="font-weight: 800; font-size: 14.5px; color: #0369a1; margin-bottom: 8px;">💵 Chế Độ Tiền Lương, Trách Nhiệm & Thuế TNCN</div>
+                <div id="payroll-box" style="background: #f0f9ff; padding: 12px; border-radius: 10px; font-size: 12.5px; line-height: 1.6; margin-bottom: 12px; border: 1px solid #bae6fd;"></div>
+                <button type="button" class="btn" style="width: 100%; font-size: 13px; padding: 10px;" onclick="claimMonthlySalary()">
+                    🏦 Quyết Toán & Lĩnh Lương Cuối Tháng
+                </button>
+
+                <div style="font-weight: 800; font-size: 13px; color: #0369a1; margin: 16px 0 8px;">📈 Thang Bậc Nhân Sự & Chế Độ Đãi Ngộ</div>
                 <div style="overflow-x: auto;">
                     <table>
                         <thead>
                             <tr>
-                                <th>Chức vụ</th><th>Yêu cầu</th><th>Lương cứng</th><th>Chiết khấu</th><th>Trách nhiệm</th><th>Hỗ trợ</th><th>Phạt</th>
+                                <th>Chức danh</th><th>Yêu cầu</th><th>Lương cứng</th><th>Chiết khấu</th><th>Trách nhiệm</th><th>Hỗ trợ/ngày</th><th>Phạt lỗi</th>
                             </tr>
                         </thead>
                         <tbody id="rank-tbody"></tbody>
                     </table>
                 </div>
             </div>
+
             <!-- TAB 4: BẢNG XẾP HẠNG -->
             <div id="tab-rank" class="card" style="display: none;">
-                <div style="font-weight: bold; font-size: 14px; color: #0369a1; margin-bottom: 6px;">🏆 Bảng Xếp Hạng Người Chơi</div>
-                <div style="font-size: 12px; color: #475569; line-height: 1.5; margin-bottom: 8px;">
-                    Bấm <b>Gửi điểm</b> để lên bảng. Tên, số tiền mặt và số lô hoàn thành của bạn sẽ hiển thị <b>công khai</b>. Gửi lại bất cứ lúc nào để cập nhật điểm.
+                <div style="font-weight: 800; font-size: 14.5px; color: #0369a1; margin-bottom: 6px;">🏆 Bảng Xếp Hạng Logistics Toàn Quốc</div>
+                <div style="font-size: 12px; color: #64748b; line-height: 1.5; margin-bottom: 10px;">
+                    Gửi thành tích để vinh danh trên bảng vàng hệ thống trực tuyến. Dữ liệu xếp hạng công khai minh bạch.
                 </div>
-                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
-                    <button type="button" class="btn" style="flex: 1; min-width: 130px; font-size: 12px;" onclick="submitScore()">📤 Gửi điểm của tôi</button>
-                    <button type="button" class="btn btn-sub" style="flex: 1; min-width: 130px; font-size: 12px;" onclick="loadLeaderboard()">🔄 Tải lại bảng</button>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;">
+                    <button type="button" class="btn" style="flex: 1; min-width: 130px; font-size: 12px;" onclick="submitScore()">📤 Gửi Điểm Của Tôi</button>
+                    <button type="button" class="btn btn-sub" style="flex: 1; min-width: 130px; font-size: 12px;" onclick="loadLeaderboard()">🔄 Tải Lại Bảng</button>
                 </div>
-                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
-                    <button type="button" class="btn" id="lb-sort-money" style="flex: 1; min-width: 130px; font-size: 12px;" onclick="setLbSort('money')">💵 Xếp theo tiền</button>
-                    <button type="button" class="btn btn-sub" id="lb-sort-done" style="flex: 1; min-width: 130px; font-size: 12px;" onclick="setLbSort('done')">📦 Xếp theo số lô</button>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;">
+                    <button type="button" class="btn" id="lb-sort-money" style="flex: 1; min-width: 130px; font-size: 12px;" onclick="setLbSort('money')">💵 Xếp Theo Tiền Mặt</button>
+                    <button type="button" class="btn btn-sub" id="lb-sort-done" style="flex: 1; min-width: 130px; font-size: 12px;" onclick="setLbSort('done')">📦 Xếp Theo Số Lô Đã Xong</button>
                 </div>
-                <div id="lb-msg" style="font-size: 12px; font-weight: 600; line-height: 1.5; min-height: 16px; margin-bottom: 6px;"></div>
+                <div id="lb-msg" style="font-size: 12px; font-weight: 600; line-height: 1.5; min-height: 18px; margin-bottom: 8px;"></div>
                 <div style="overflow-x: auto;">
                     <table>
-                        <thead><tr><th>#</th><th>Tên</th><th>Tiền mặt</th><th>Số lô</th></tr></thead>
+                        <thead><tr><th>Hạng</th><th>Tên Nhân Viên</th><th>Tiền Mặt</th><th>Số Lô Đạt</th></tr></thead>
                         <tbody id="lb-body"></tbody>
                     </table>
                 </div>
@@ -257,11 +672,51 @@
         </div>
     </div>
 </div>
+
 <script>
-    // ===== DÁN LINK GOOGLE APPS SCRIPT (kết thúc bằng /exec) VÀO ĐÂY ĐỂ BẬT BẢNG XẾP HẠNG =====
+    // =========================================================================
+    // CẤU HÌNH BẢNG XẾP HẠNG & TIỆN ÍCH
+    // =========================================================================
     var LEADERBOARD_URL = "https://script.google.com/macros/s/AKfycbyZTc7UMV3xvRspdNUsnQYUVdDM4RaBGlcvtfBufO5mGQdK_eO-jol17pFqax7yOV7SmA/exec";
-    // =========================================================================================
+    var soundEnabled = true;
+
+    function playTone(freq, type, duration) {
+        if (!soundEnabled) return;
+        try {
+            var AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            var ctx = new AudioContext();
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.type = type || 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(0.08, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + duration);
+        } catch(e) {}
+    }
+
+    function soundClick() { playTone(800, 'sine', 0.04); }
+    function soundCorrect() {
+        playTone(523.25, 'triangle', 0.1);
+        setTimeout(function() { playTone(659.25, 'triangle', 0.12); }, 90);
+        setTimeout(function() { playTone(783.99, 'triangle', 0.2); }, 180);
+    }
+    function soundWrong() {
+        playTone(260, 'sawtooth', 0.15);
+        setTimeout(function() { playTone(200, 'sawtooth', 0.25); }, 140);
+    }
+
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        document.getElementById('btn-sound').innerText = soundEnabled ? "🔊 Bật" : "🔇 Tắt";
+    }
+
     function fmt(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
     function shuffleArray(arr) {
         var copy = arr.slice();
         for (var i = copy.length - 1; i > 0; i--) {
@@ -270,6 +725,10 @@
         }
         return copy;
     }
+
+    // =========================================================================
+    // THANG BẬC CHỨC DANH & CHỨNG CHỈ
+    // =========================================================================
     var RANKS = [
         { name: "Thực tập sinh", min: 0, sal: 1000000, rate: 0.005, resp: 0, supDay: 0, fineMin: 0, fineMax: 0, mult: 1 },
         { name: "NV chính thức 1", min: 3, sal: 3500000, rate: 0.01, resp: 300000, supDay: 50000, fineMin: 0, fineMax: 0, mult: 1 },
@@ -279,35 +738,607 @@
         { name: "Phó giám đốc", min: 60, sal: 20000000, rate: 0.027, resp: 2000000, supDay: 200000, fineMin: 200000, fineMax: 500000, mult: 2 },
         { name: "Giám đốc", min: 80, sal: 50000000, rate: 0.03, resp: 5000000, supDay: 500000, fineMin: 200000, fineMax: 500000, mult: 2 }
     ];
+
     var COURSES = [
-        { id: "fork", name: "Chứng chỉ Vận Hành Xe Nâng", cost: 10000000, gain: 10, desc: "Quy tắc FIFO, FEFO và an toàn kho." },
-        { id: "it", name: "Tin Học Logistics & ERP/WMS", cost: 25000000, gain: 15, desc: "Quản trị dữ liệu tồn kho và chứng từ." },
-        { id: "eng", name: "Tiếng Anh Ngoại Thương Quốc Tế", cost: 45000000, gain: 20, desc: "Đọc hiểu L/C, Bill of Lading, đàm phán." },
-        { id: "cus", name: "Đại Lý Hải Quan & HS Code", cost: 70000000, gain: 25, desc: "Thông thạo VNACCS và xử lý Luồng Đỏ." },
-        { id: "fiata", name: "Quản Trị Chuỗi Cung Ứng FIATA", cost: 100000000, gain: 35, desc: "Chứng chỉ Giám đốc Logistics toàn cầu." }
+        { id: "fork", name: "Chứng chỉ Vận Hành Xe Nâng & Kho", cost: 10000000, gain: 10, desc: "Quy tắc FIFO, FEFO và an toàn cháy nổ kho bãi." },
+        { id: "it", name: "Tin Học Logistics & Hệ Thống WMS/TMS", cost: 25000000, gain: 15, desc: "Quản trị dữ liệu tồn kho, mã vạch và chứng từ điện tử." },
+        { id: "eng", name: "Tiếng Anh Ngoại Thương Quốc Tế", cost: 45000000, gain: 20, desc: "Đọc hiểu L/C, B/L, đàm phán hợp đồng song ngữ." },
+        { id: "cus", name: "Đại Lý Hải Quan & Phân Loại HS Code", cost: 70000000, gain: 25, desc: "Thông thạo VNACCS/VCIS và xử lý hồ sơ Luồng Đỏ." },
+        { id: "fiata", name: "Quản Trị Chuỗi Cung Ứng FIATA Thụy Sỹ", cost: 100000000, gain: 35, desc: "Chứng chỉ đỉnh cao Giám đốc Chuỗi Cung Ứng Toàn Cầu." }
     ];
+
     var PORTS = [
-        { name: "Cảng Cát Lái", km: 30, fuel: 1.0 },
-        { name: "Cảng Bình Dương", km: 60, fuel: 2.0 },
-        { name: "Cảng Cái Mép", km: 120, fuel: 4.0 }
+        { name: "Cảng Tân Cảng Cát Lái", km: 30, fuel: 1.0 },
+        { name: "ICD Tân Cảng Sóng Thần - Bình Dương", km: 60, fuel: 2.0 },
+        { name: "Cụm Cảng Nước Sâu Cái Mép - Thị Vải", km: 120, fuel: 4.0 },
+        { name: "Cảng Hàng Không Quốc Tế Tân Sơn Nhất (TCS)", km: 20, fuel: 0.8 }
     ];
+
+    // =========================================================================
+    // NGÂN HÀNG 60 CÂU HỎI LOGISTICS VIỆT NAM (CHUẨN XÁC, ĐA DẠNG, KHÔNG TRÙNG LẶP)
+    // =========================================================================
     var QUESTION_POOL = [
-        { q: "Nguyên tắc xuất kho hàng thực phẩm date ngắn?", correct: "FEFO (Hết hạn trước xuất trước)", w1: "LIFO", w2: "FIFO", w3: "HIFO", hint: "Dùng FEFO." },
-        { q: "Bán giá FOB Cát Lái, cước biển trên B/L ghi gì?", correct: "Freight Collect (Cước trả sau)", w1: "Freight Prepaid", w2: "Free In and Out", w3: "Clean On Board", hint: "FOB thu cước collect." },
-        { q: "Mã loại hình xuất khẩu thương mại thông thường?", correct: "B11 - Xuất khẩu kinh doanh", w1: "A11", w2: "E31", w3: "G21", hint: "Mã B11." },
-        { q: "Xuất hàng sang Nhật theo VJEPA cần C/O nào?", correct: "C/O Form VJ", w1: "C/O Form E", w2: "C/O Form AK", w3: "C/O Form AANZ", hint: "Form VJ." },
-        { q: "Đóng 25 tấn tôm đông lạnh -18°C đi Mỹ dùng cont gì?", correct: "Container 20'RF (Cont lạnh)", w1: "Container 20'DC", w2: "Container 20'OT", w3: "Container 40'FR", hint: "Cont lạnh RF." },
-        { q: "Trước khi tàu đi Mỹ chạy 24h cần khai báo gì?", correct: "AMS và ISF (10+2)", w1: "AFR", w2: "ENS", w3: "e-Manifest", hint: "AMS và ISF." },
-        { q: "Hàng về kho móp ướt nhưng seal nguyên vẹn, xử lý sao?", correct: "Lập Biên bản hàng hư hỏng (ROROC)", w1: "Tự dỡ không biên bản", w2: "Bắt tài xế đền", w3: "Im lặng nhập kho", hint: "Lập biên bản ROROC." },
-        { q: "Tờ khai phân Luồng Đỏ có ý nghĩa gì?", correct: "Kiểm tra hồ sơ VÀ kiểm tra thực tế hàng", w1: "Miễn kiểm tra", w2: "Chỉ kiểm tra hồ sơ", w3: "Tịch thu hàng", hint: "Luồng Đỏ kiểm cả hai." }
+        // --- 1. KHO BÃI & PHÂN PHỐI ---
+        {
+            id: "q_fefo",
+            level: "easy",
+            topic: "Kho Bãi",
+            q: "Nguyên tắc xuất kho đối với hàng thực phẩm, sữa tươi có hạn sử dụng ngắn là gì?",
+            correct: "FEFO (Hết hạn trước xuất trước - First Expired First Out)",
+            w1: "LIFO (Vào sau xuất trước - Last In First Out)",
+            w2: "FIFO (Vào trước xuất trước - First In First Out)",
+            w3: "HIFO (Giá vốn cao nhất xuất trước - Highest In First Out)",
+            hint: "Hàng date ngắn cận hạn phải dùng FEFO để giải phóng hàng trước ngày hết hạn."
+        },
+        {
+            id: "q_fifo",
+            level: "easy",
+            topic: "Kho Bãi",
+            q: "Nguyên tắc quản lý kho đối với hàng cơ khí, máy móc công nghiệp thông thường là gì?",
+            correct: "FIFO (Vào trước xuất trước - First In First Out)",
+            w1: "FEFO (Hết hạn trước xuất trước)",
+            w2: "LIFO (Vào sau xuất trước)",
+            w3: "JIT (Vừa kịp lúc - Just In Time)",
+            hint: "Hàng công nghiệp không date dùng FIFO để luân chuyển hàng lưu kho đều đặn, tránh ứ đọng cũ."
+        },
+        {
+            id: "q_crossdock",
+            level: "hard",
+            topic: "Kho Bãi",
+            q: "Mô hình nhận hàng tại kho rồi phân loại chuyển ngay sang xe giao mà không lưu kho gọi là gì?",
+            correct: "Cross-docking (Chuyển tiếp qua kho)",
+            w1: "Bonded warehousing (Lưu kho ngoại quan)",
+            w2: "VMI (Kho do nhà cung cấp quản lý)",
+            w3: "Buffer stocking (Kho đệm dự phòng)",
+            hint: "Cross-docking loại bỏ hoàn toàn chi phí lưu kho dài ngày và thao tác xếp dỡ trung gian."
+        },
+        {
+            id: "q_pallet_iso",
+            level: "easy",
+            topic: "Kho Bãi",
+            q: "Kích thước tiêu chuẩn quốc tế của một Pallet Châu Âu (EUR-Pallet) là bao nhiêu?",
+            correct: "1200 x 800 mm",
+            w1: "1200 x 1000 mm",
+            w2: "1100 x 1100 mm",
+            w3: "1000 x 1000 mm",
+            hint: "Quy chuẩn tiêu chuẩn pallet Châu Âu EUR/EPAL là 1200 x 800 mm."
+        },
+        {
+            id: "q_bonded_wh",
+            level: "hard",
+            topic: "Kho Bãi & Hải Quan",
+            q: "Hàng hóa đưa vào Kho ngoại quan (Bonded Warehouse) có đặc điểm nổi bật nào về thuế?",
+            correct: "Chưa phải nộp thuế nhập khẩu và thuế VAT",
+            w1: "Được miễn thuế vĩnh viễn không cần bất kỳ giấy phép nào",
+            w2: "Bắt buộc phải nộp đủ thuế trong vòng 24 giờ sau khi vào kho",
+            w3: "Chỉ được lưu kho tối đa 7 ngày làm việc",
+            hint: "Hàng vào kho ngoại quan chưa làm thủ tục nhập khẩu vào nội địa nên chưa phát sinh nghĩa vụ thuế."
+        },
+
+        // --- 2. INCOTERMS 2020 ---
+        {
+            id: "q_fob_bl",
+            level: "easy",
+            topic: "Incoterms 2020",
+            q: "Theo điều kiện FOB Cát Lái (Incoterms 2020), cước vận chuyển biển trên B/L ghi nhận là gì?",
+            correct: "Freight Collect (Cước trả sau bởi người mua)",
+            w1: "Freight Prepaid (Cước trả trước bởi người bán)",
+            w2: "Free In and Out (Miễn phí bốc dỡ)",
+            w3: "Clean On Board (Hàng sạch đã bốc)",
+            hint: "FOB quy định người mua book tàu và thanh toán cước biển tại cảng đến (Freight Collect)."
+        },
+        {
+            id: "q_cif_ins",
+            level: "easy",
+            topic: "Incoterms 2020",
+            q: "Trong điều kiện CIF (Incoterms 2020), người bán có nghĩa vụ mua bảo hiểm hàng hóa mức tối thiểu nào?",
+            correct: "Điều kiện C (Institute Cargo Clauses C - Phạm vi rủi ro tối thiểu)",
+            w1: "Điều kiện A (Institute Cargo Clauses A - Mọi rủi ro)",
+            w2: "Điều kiện B (Phạm vi rủi ro trung bình)",
+            w3: "Không có nghĩa vụ mua bảo hiểm",
+            hint: "CIF 2020 chỉ yêu cầu người bán mua mức tối thiểu Loại C, trong khi CIP yêu cầu mức tối đa Loại A."
+        },
+        {
+            id: "q_cip_ins",
+            level: "hard",
+            topic: "Incoterms 2020",
+            q: "Khác biệt cốt lõi giữa CIF và CIP theo Incoterms 2020 về bảo hiểm hàng hóa là gì?",
+            correct: "CIP bắt buộc người bán mua bảo hiểm loại A (Toàn diện), CIF chỉ cần loại C",
+            w1: "CIF bắt buộc bảo hiểm loại A, CIP chỉ cần loại C",
+            w2: "Cả CIF và CIP đều bắt buộc bảo hiểm loại B",
+            w3: "CIP người mua tự mua bảo hiểm, người bán không chịu phí",
+            hint: "Incoterms 2020 quy định nâng cấp bảo hiểm cho CIP lên loại A (All Risks)."
+        },
+        {
+            id: "q_exw_duty",
+            level: "easy",
+            topic: "Incoterms 2020",
+            q: "Điều kiện Incoterms nào người bán có nghĩa vụ, chi phí và rủi ro ở mức tối thiểu nhất?",
+            correct: "EXW (Giao tại xưởng - Ex Works)",
+            w1: "FOB (Giao trên tàu)",
+            w2: "DDP (Giao đã thông quan nộp thuế)",
+            w3: "FCA (Giao cho người chuyên chở)",
+            hint: "EXW người bán chỉ đặt hàng sẵn tại xưởng, người mua chịu toàn bộ chi phí bốc xếp và vận tải."
+        },
+        {
+            id: "q_ddp_tax",
+            level: "hard",
+            topic: "Incoterms 2020",
+            q: "Theo điều kiện DDP (Incoterms 2020), ai là người chịu trách nhiệm nộp thuế nhập khẩu tại nước đến?",
+            correct: "Người bán (Seller)",
+            w1: "Người mua (Buyer)",
+            w2: "Hãng tàu vận chuyển",
+            w3: "Công ty đại lý giao nhận Forwarder",
+            hint: "DDP (Delivered Duty Paid) là điều kiện người bán chịu trách nhiệm tối đa, bao gồm thông quan và nộp thuế nước đến."
+        },
+        {
+            id: "q_fca_risk",
+            level: "easy",
+            topic: "Incoterms 2020",
+            q: "Theo FCA (Incoterms 2020), rủi ro chuyển giao từ người bán sang người mua tại thời điểm nào?",
+            correct: "Khi hàng được giao cho người vận chuyển do người mua chỉ định tại địa điểm thỏa thuận",
+            w1: "Khi hàng đã qua hẳn lan can tàu tại cảng bốc",
+            w2: "Khi hàng về đến tận kho của người mua",
+            w3: "Khi người mua thanh toán đủ 100% tiền hàng",
+            hint: "FCA chuyển giao rủi ro ngay khi bàn giao cho người chuyên chở đầu tiên (Carrier)."
+        },
+
+        // --- 3. HẢI QUAN & VNACCS/VCIS ---
+        {
+            id: "q_vnaccs_red",
+            level: "easy",
+            topic: "Hải Quan VNACCS",
+            q: "Tờ khai hải quan điện tử phân Luồng Đỏ có ý nghĩa quy trình kiểm tra thế nào?",
+            correct: "Kiểm tra chi tiết hồ sơ VÀ kiểm tra thực tế hàng hóa",
+            w1: "Miễn kiểm tra hồ sơ và miễn kiểm tra thực tế hàng hóa",
+            w2: "Chỉ kiểm tra hồ sơ chứng từ, không kiểm tra hàng",
+            w3: "Hàng bị tịch thu ngay tại cảng không cho thông quan",
+            hint: "Luồng Xanh: Miễn kiểm tra; Luồng Vàng: Kiểm hồ sơ; Luồng Đỏ: Kiểm cả hồ sơ và soi chiếu/khui kiểm hàng."
+        },
+        {
+            id: "q_vnaccs_yellow",
+            level: "easy",
+            topic: "Hải Quan VNACCS",
+            q: "Tờ khai hải quan được hệ thống VNACCS phân Luồng Vàng cần thực hiện bước gì?",
+            correct: "Nộp bộ chứng từ hải quan điện tử để công chức hải quan kiểm tra tính hợp lệ",
+            w1: "Kéo container vào bãi kiểm hóa mở seal kiểm tra từng kiện",
+            w2: "Cho xe đầu kéo vào bãi lấy hàng ra cổng cảng ngay lập tức",
+            w3: "Hủy tờ khai và khai lại tờ khai mới",
+            hint: "Luồng Vàng chỉ yêu cầu kiểm tra chi tiết hồ sơ hải quan trước khi thông quan."
+        },
+        {
+            id: "q_type_b11",
+            level: "easy",
+            topic: "Mã Loại Hình",
+            q: "Mã loại hình tờ khai xuất khẩu kinh doanh thương mại thông thường tại Việt Nam là gì?",
+            correct: "B11 - Xuất khẩu kinh doanh",
+            w1: "A11 - Nhập khẩu tiêu dùng",
+            w2: "E31 - Nhập nguyên liệu SXXK",
+            w3: "G21 - Tái xuất hàng tạm nhập",
+            hint: "B11 là mã chuẩn dùng cho các doanh nghiệp xuất khẩu thương mại thuần túy."
+        },
+        {
+            id: "q_type_a11",
+            level: "easy",
+            topic: "Mã Loại Hình",
+            q: "Mã loại hình tờ khai nhập khẩu hàng hóa kinh doanh tiêu dùng thông thường tại Việt Nam là gì?",
+            correct: "A11 - Nhập kinh doanh tiêu dùng",
+            w1: "A12 - Nhập kinh doanh sản xuất",
+            w2: "E21 - Nhập nguyên liệu gia công",
+            w3: "B13 - Xuất khẩu hàng đã nhập khẩu",
+            hint: "A11 là mã tờ khai nhập khẩu phổ biến nhất cho hàng hóa tiêu dùng thương mại tại Việt Nam."
+        },
+        {
+            id: "q_type_e31",
+            level: "hard",
+            topic: "Mã Loại Hình",
+            q: "Doanh nghiệp nhập khẩu nguyên liệu để sản xuất hàng xuất khẩu (SXXK) khai mã loại hình nào?",
+            correct: "E31 - Nhập nguyên liệu sản xuất xuất khẩu",
+            w1: "A11 - Nhập kinh doanh",
+            w2: "B11 - Xuất kinh doanh",
+            w3: "G11 - Tạm nhập tái xuất",
+            hint: "E31 áp dụng cho nguyên phụ liệu nhập khẩu cấu thành vào sản phẩm xuất khẩu được miễn/hoàn thuế."
+        },
+        {
+            id: "q_hs_code",
+            level: "easy",
+            topic: "Hải Quan & Thuế",
+            q: "Mã số HS Code của hàng hóa trong Biểu thuế xuất nhập khẩu Việt Nam gồm bao nhiêu chữ số?",
+            correct: "8 chữ số (chuẩn danh mục Biểu thuế AHTN ASEAN)",
+            w1: "6 chữ số",
+            w2: "10 chữ số",
+            w3: "12 chữ số",
+            hint: "Tổ chức Hải quan thế giới WCO chuẩn hóa 6 số, Việt Nam và khối ASEAN áp dụng chuẩn AHTN 8 số."
+        },
+        {
+            id: "q_roroc",
+            level: "hard",
+            topic: "Hiện Trường & Khiếu Nại",
+            q: "Hàng về kho phát hiện móp méo, ướt nhưng seal container còn nguyên vẹn, cần lập biên bản gì?",
+            correct: "Lập Biên bản hàng hư hỏng/bất thường (ROROC/COR) có xác nhận của tài xế",
+            w1: "Tự động dỡ hàng vào kho không cần lập biên bản",
+            w2: "Bắt tài xế xe bồi thường tiền mặt 100% ngay lập tức",
+            w3: "Tự ý cắt seal và giấu kín không báo bảo hiểm",
+            hint: "ROROC (Report on Receipt of Cargo) ghi nhận tình trạng bất thường lúc giao nhận làm bằng chứng đòi bảo hiểm."
+        },
+        {
+            id: "q_tam_van_gia",
+            level: "hard",
+            topic: "Hải Quan & Thuế",
+            q: "Khi Hải quan nghi vấn trị giá khai báo quá thấp so với cơ sở dữ liệu rủi ro, doanh nghiệp phải làm gì?",
+            correct: "Tham vấn giá hoặc giải trình chứng minh cơ sở xác định trị giá tính thuế",
+            w1: "Nộp phạt hành chính và chấp nhận tiêu hủy hàng hóa",
+            w2: "Đóng mã số thuế và giải thể doanh nghiệp",
+            w3: "Khai lại tờ khai khác với giá tăng gấp đôi ngay lập tức",
+            hint: "Quy trình tham vấn giá cho phép người khai hải quan chứng minh tính có thực của giá trị giao dịch."
+        },
+        {
+            id: "q_so_luu_ky",
+            level: "hard",
+            topic: "Pháp Lý Hải Quan",
+            q: "Theo Luật Hải quan Việt Nam, hồ sơ hải quan doanh nghiệp phải lưu giữ trong thời hạn bao lâu?",
+            correct: "05 năm kể từ ngày đăng ký tờ khai hải quan",
+            w1: "01 năm",
+            w2: "03 năm",
+            w3: "10 năm",
+            hint: "Điều 18 Luật Hải quan quy định doanh nghiệp phải lưu trữ chứng từ hải quan tối thiểu 5 năm để phục vụ KTSTQ."
+        },
+        {
+            id: "q_stq",
+            level: "hard",
+            topic: "Pháp Lý Hải Quan",
+            q: "Cơ quan Hải quan có quyền thực hiện 'Kiểm tra sau thông quan' tại trụ sở doanh nghiệp trong thời hạn nào?",
+            correct: "Trong thời hạn 05 năm kể từ ngày hàng hóa được thông quan",
+            w1: "Chỉ trong vòng 30 ngày sau khi thông quan",
+            w2: "Chỉ khi hàng hóa còn đang nằm tại bãi cảng",
+            w3: "Vô thời hạn không giới hạn số năm",
+            hint: "Thời hiệu kiểm tra sau thông quan là 5 năm để rà soát chứng từ kế toán, sổ sách xuất nhập tồn."
+        },
+
+        // --- 4. CHỨNG NHẬN XUẤT XỨ (C/O) ---
+        {
+            id: "q_co_vj",
+            level: "easy",
+            topic: "Chứng Nhận Xuất Xứ C/O",
+            q: "Xuất khẩu hàng hóa từ Việt Nam sang Nhật Bản theo VJEPA cần xin C/O mẫu nào?",
+            correct: "C/O Form VJ",
+            w1: "C/O Form E",
+            w2: "C/O Form AK",
+            w3: "C/O Form AANZ",
+            hint: "Form VJ cấp theo Hiệp định đối tác kinh tế Việt Nam - Nhật Bản (VJEPA)."
+        },
+        {
+            id: "q_co_e",
+            level: "easy",
+            topic: "Chứng Nhận Xuất Xứ C/O",
+            q: "C/O Form E được sử dụng để hưởng thuế ưu đãi đặc biệt trong khuôn khổ hiệp định thương mại nào?",
+            correct: "ACFTA (Hiệp định Thương mại Tự do ASEAN - Trung Quốc)",
+            w1: "AKFTA (ASEAN - Hàn Quốc)",
+            w2: "EVFTA (Việt Nam - Liên minh Châu Âu)",
+            w3: "CPTPP (Hiệp định Đối tác Toàn diện xuyên Thái Bình Dương)",
+            hint: "C/O Form E là chứng từ xuất xứ tối quan trọng trong thương mại xuất nhập khẩu với Trung Quốc."
+        },
+        {
+            id: "q_co_d",
+            level: "easy",
+            topic: "Chứng Nhận Xuất Xứ C/O",
+            q: "Hàng hóa nhập khẩu từ Thái Lan hoặc Indonesia vào Việt Nam cần C/O Form nào để hưởng ưu đãi ATIGA?",
+            correct: "C/O Form D",
+            w1: "C/O Form B",
+            w2: "C/O Form E",
+            w3: "C/O Form AK",
+            hint: "Form D áp dụng cho các quốc gia thành viên Hiệp hội các quốc gia Đông Nam Á (ASEAN)."
+        },
+        {
+            id: "q_co_eur1",
+            level: "hard",
+            topic: "Chứng Nhận Xuất Xứ C/O",
+            q: "Hàng xuất khẩu sang các nước Liên minh Châu Âu (EU) theo EVFTA sử dụng mẫu chứng từ xuất xứ nào?",
+            correct: "C/O Mẫu EUR.1 hoặc Cơ chế tự chứng nhận xuất xứ REX",
+            w1: "C/O Form D",
+            w2: "C/O Form E",
+            w3: "C/O Form S",
+            hint: "EVFTA sử dụng mẫu EUR.1 hoặc mã số tự chứng nhận REX cho các lô hàng đủ điều kiện."
+        },
+        {
+            id: "q_co_b",
+            level: "hard",
+            topic: "Chứng Nhận Xuất Xứ C/O",
+            q: "C/O Form B do VCCI cấp cho hàng xuất khẩu của Việt Nam có đặc điểm gì?",
+            correct: "Là C/O không ưu đãi thuế quan (chỉ chứng minh xuất xứ thuần túy)",
+            w1: "Hưởng thuế nhập khẩu 0% tại tất cả các nước trên thế giới",
+            w2: "Chỉ dùng cho hàng hóa nhập khẩu từ Mỹ",
+            w3: "Chỉ dùng cho hàng nông sản thô chưa chế biến",
+            hint: "Form B là mẫu C/O chuẩn không ưu đãi (Non-preferential C/O) dùng cho các thị trường chưa có FTA."
+        },
+
+        // --- 5. VẬN TẢI BIỂN, CONTAINER & CẢNG BIỂN ---
+        {
+            id: "q_cont_rf",
+            level: "easy",
+            topic: "Vận Tải Container",
+            q: "Đóng 25 tấn tôm đông lạnh bảo quản -18°C xuất khẩu đi Mỹ cần sử dụng loại container nào?",
+            correct: "Container 20'RF hoặc 40'RF (Cont lạnh Reefer)",
+            w1: "Container 20'DC (Cont khô tiêu chuẩn)",
+            w2: "Container 20'OT (Cont mở nóc Open Top)",
+            w3: "Container 40'FR (Cont mặt bằng Flat Rack)",
+            hint: "Cont RF (Reefer) trang bị hệ thống máy lạnh giữ dải nhiệt độ âm sâu chuyên dụng cho hàng đông lạnh."
+        },
+        {
+            id: "q_ams_isf",
+            level: "hard",
+            topic: "Chứng Từ Hàng Hải",
+            q: "Trước khi tàu biển chở hàng đi Mỹ rời cảng xếp 24 giờ, bắt buộc phải hoàn thành khai báo gì?",
+            correct: "Khai báo hải quan tự động AMS và hồ sơ an ninh ISF (10+2)",
+            w1: "Khai báo AFR Nhật Bản",
+            w2: "Khai báo ENS Châu Âu",
+            w3: "Khai báo e-Manifest nội địa",
+            hint: "Hải quan Mỹ (CBP) kiểm soát cực kỳ nghiêm ngặt quy tắc 24-hour rule đối với AMS và ISF."
+        },
+        {
+            id: "q_thc_fee",
+            level: "easy",
+            topic: "Phụ Phí Vận Tải",
+            q: "Phụ phí xếp dỡ tại cảng THC (Terminal Handling Charge) là khoản chi phí cho hoạt động nào?",
+            correct: "Bốc dỡ container từ cầu tàu vào bãi cảng và ngược lại",
+            w1: "Vệ sinh và rửa vỏ container sau khi dỡ hàng",
+            w2: "Phí bảo hiểm cháy nổ thân tàu trên biển",
+            w3: "Phí phạt lưu container tại kho riêng quá hạn",
+            hint: "THC là phụ phí hãng tàu thu hộ và thanh toán cho doanh nghiệp khai thác cảng bến bãi."
+        },
+        {
+            id: "q_dem_det",
+            level: "hard",
+            topic: "Phụ Phí Vận Tải",
+            q: "Khoản phí DEM (Demurrage) phát sinh trong trường hợp nào?",
+            correct: "Container lưu lại tại bãi cảng vượt quá số ngày miễn phí cho phép",
+            w1: "Chủ hàng giữ vỏ container tại kho riêng của mình quá hạn",
+            w2: "Xe đầu kéo chở hàng bị cảnh sát giao thông phạt quá tải",
+            w3: "Hàng bị hải quan phân luồng đỏ kiểm hóa",
+            hint: "DEM: Phí lưu cont tại bãi cảng; DET (Detention): Phí giữ vỏ cont tại kho riêng bên ngoài."
+        },
+        {
+            id: "q_cic_fee",
+            level: "hard",
+            topic: "Phụ Phí Vận Tải",
+            q: "Phụ phí mất cân bằng vỏ container do hãng tàu thu có ký hiệu quốc tế là gì?",
+            correct: "Phí CIC (Container Imbalance Charge)",
+            w1: "Phí CFS (Container Freight Station)",
+            w2: "Phí D/O (Delivery Order fee)",
+            w3: "Phí BAF (Bunker Adjustment Factor)",
+            hint: "CIC bù đắp chi phí điều chuyển vỏ container rỗng từ khu vực nhập siêu sang khu vực xuất siêu."
+        },
+        {
+            id: "q_teu_unit",
+            level: "easy",
+            topic: "Vận Tải Container",
+            q: "Đơn vị đo lường năng lực TEU trong vận tải biển tương đương với kích thước nào?",
+            correct: "1 Container tiêu chuẩn 20 feet (Twenty-foot Equivalent Unit)",
+            w1: "1 Container 40 feet tiêu chuẩn",
+            w2: "10 tấn hàng hóa khô",
+            w3: "1 Pallet tiêu chuẩn Châu Âu",
+            hint: "1 TEU = 1 cont 20 feet; 1 cont 40 feet được tính tương đương 2 TEU (hoặc 1 FEU)."
+        },
+        {
+            id: "q_surrender_bl",
+            level: "hard",
+            topic: "Chứng Từ Hàng Hải",
+            q: "Khi nào hãng tàu phát hành Surrendered Bill of Lading (Vận đơn điện giao hàng)?",
+            correct: "Khi người gửi hàng trả lại toàn bộ B/L gốc để người nhận nhận hàng nhanh bằng điện tín telex",
+            w1: "Khi tàu bị đắm hoặc cháy nổ trên biển",
+            w2: "Khi người mua từ chối nhận hàng tại cảng đến",
+            w3: "Khi chưa bốc hàng lên tàu tại cảng xuất",
+            hint: "Surrendered B/L giúp người mua giải phóng hàng ngay mà không cần chờ gửi bưu điện bộ vận đơn gốc."
+        },
+        {
+            id: "q_sea_waybill",
+            level: "hard",
+            topic: "Chứng Từ Hàng Hải",
+            q: "Giấy gửi hàng đường biển Sea Waybill có tính chất pháp lý nào khác với Vận đơn gốc Original B/L?",
+            correct: "Không phải là chứng từ sở hữu hàng hóa, không thể chuyển nhượng (ký hậu)",
+            w1: "Là chứng từ sở hữu hàng hóa cao nhất, có thể cầm cố ngân hàng",
+            w2: "Bắt buộc phải xuất trình bản giấy có dấu mộc đỏ tại cảng đến",
+            w3: "Chỉ được dùng cho vận chuyển bằng máy bay chở hàng",
+            hint: "Sea Waybill không phải chứng từ sở hữu hàng (non-negotiable), chỉ định đích danh người nhận hàng."
+        },
+        {
+            id: "q_switch_bl",
+            level: "hard",
+            topic: "Chứng Từ Hàng Hải",
+            q: "Trong thương mại ba bên (Cross-trade / Triangle), Switch B/L được sử dụng với mục đích chính là gì?",
+            correct: "Thay thế vận đơn gốc để bảo mật thông tin nhà sản xuất thực tế và giá gốc đối với khách mua cuối",
+            w1: "Thay đổi hải trình của con tàu sang quốc gia khác",
+            w2: "Hủy bỏ trách nhiệm bồi thường của hãng tàu khi hàng hỏng",
+            w3: "Làm giả xuất xứ hàng hóa để trốn thuế",
+            hint: "Công ty trung gian thương mại dùng Switch B/L để người mua cuối không biết ai là xưởng sản xuất gốc."
+        },
+        {
+            id: "q_cai_mep",
+            level: "easy",
+            topic: "Cảng Biển Việt Nam",
+            q: "Ưu thế vượt trội lớn nhất của Cụm cảng nước sâu Cái Mép - Thị Vải so với Cát Lái là gì?",
+            correct: "Đón được tàu mẹ siêu trọng tải đi thẳng trực tiếp tới Mỹ và Châu Âu không cần trung chuyển",
+            w1: "Nằm ngay trung tâm Quận 1 TP.HCM giúp xe tải đi nhanh",
+            w2: "Chỉ phục vụ sà lan đường sông nội địa",
+            w3: "Giá cước bốc xếp rẻ hơn 10 lần",
+            hint: "Cái Mép có mớn nước sâu đón được tàu mẹ sức chở trên 200.000 DWT đi tuyến xa trực tiếp."
+        },
+        {
+            id: "q_cat_lai",
+            level: "easy",
+            topic: "Cảng Biển Việt Nam",
+            q: "Cảng Tân Cảng Cát Lái (TP.HCM) có vị thế như thế nào trong ngành logistics Việt Nam?",
+            correct: "Cảng container có sản lượng thông qua lớn nhất cả nước, chủ yếu là các tuyến nội Á",
+            w1: "Cảng nước sâu đón tàu container lớn nhất thế giới",
+            w2: "Cảng chỉ chuyên chở hàng quặng than và dầu mỏ",
+            w3: "Cảng cạn ICD không tiếp giáp mặt nước",
+            hint: "Cát Lái là đầu mối container sầm uất nhất cả nước, chiếm hơn 50% thị phần khu vực phía Nam."
+        },
+        {
+            id: "q_lach_huyen",
+            level: "easy",
+            topic: "Cảng Biển Việt Nam",
+            q: "Cảng nước sâu cửa ngõ quốc tế trọng điểm đón tàu mẹ xuyên đại dương tại miền Bắc là cảng nào?",
+            correct: "Cảng Quốc tế Lạch Huyện (Hải Phòng - TC-HICT)",
+            w1: "Cảng Chùa Vẽ",
+            w2: "Cảng Hoàng Diệu",
+            w3: "Cảng Cửa Lò",
+            hint: "Lạch Huyện là cảng nước sâu đầu tiên của miền Bắc có khả năng tiếp nhận tàu container lớn đi Mỹ/Âu."
+        },
+
+        // --- 6. HÀNG KHÔNG, HÀNG NGUY HIỂM & VẬN TẢI ---
+        {
+            id: "q_air_vol",
+            level: "hard",
+            topic: "Hàng Không IATA",
+            q: "Công thức tính trọng lượng thể tích (Volumetric Weight) chuẩn IATA trong vận tải hàng không quốc tế là gì?",
+            correct: "(Dài x Rộng x Cao tính bằng cm) / 6000",
+            w1: "(Dài x Rộng x Cao) / 5000",
+            w2: "(Dài x Rộng x Cao) / 1000",
+            w3: "(Dài x Rộng x Cao) / 3333",
+            hint: "Hàng không quốc tế quy định 1 CBM tương đương 167 kg, do đó áp dụng tỷ lệ chia 6000."
+        },
+        {
+            id: "q_imdg",
+            level: "hard",
+            topic: "Hàng Nguy Hiểm",
+            q: "Bộ quy tắc quốc tế bắt buộc về vận chuyển hàng hóa nguy hiểm bằng đường biển là gì?",
+            correct: "Bộ luật IMDG Code (International Maritime Dangerous Goods Code)",
+            w1: "Quy định IATA DGR",
+            w2: "Quy chuẩn Incoterms 2020",
+            w3: "Tiêu chuẩn ISO 14001",
+            hint: "IMDG Code do IMO ban hành phân loại hàng nguy hiểm thành 9 nhóm để kiểm soát an toàn biển."
+        },
+        {
+            id: "q_lithium",
+            level: "hard",
+            topic: "Hàng Nguy Hiểm & Hàng Không",
+            q: "Vận chuyển pin Lithium (Lithium-ion) bằng đường hàng không yêu cầu điều kiện trạng thái sạc (SoC) tối đa là bao nhiêu?",
+            correct: "Trạng thái sạc không vượt quá 30% (SoC ≤ 30%)",
+            w1: "Phải sạc đầy 100% dung lượng pin",
+            w2: "Không có giới hạn mức sạc",
+            w3: "Cấm vận chuyển pin trong mọi trường hợp",
+            hint: "IATA quy định nghiêm ngặt pin lithium vận chuyển trên máy bay chở hàng chỉ được nạp tối đa 30% để phòng chống cháy nổ."
+        },
+        {
+            id: "q_vgm",
+            level: "easy",
+            topic: "An Toàn Hàng Hải",
+            q: "Quy định xác nhận khối lượng toàn bộ container VGM (Verified Gross Mass) theo SOLAS nhằm mục đích gì?",
+            correct: "Xác thực chính xác tổng trọng lượng cont trước khi xếp lên tàu để tránh lật chìm tàu do khai gian",
+            w1: "Để tính thuế nhập khẩu hải quan",
+            w2: "Để xác định xuất xứ hàng hóa",
+            w3: "Để mua bảo hiểm thân tàu",
+            hint: "VGM bắt buộc Shipper phải cân chính xác cont để thuyền trưởng lên sơ đồ xếp tải trọng an toàn."
+        },
+        {
+            id: "q_fumigation",
+            level: "easy",
+            topic: "Kiểm Dịch Thực Vật",
+            q: "Hàng nông sản hoặc bao bì gỗ thô xuất khẩu sang Mỹ, EU, Úc bắt buộc phải thực hiện thủ tục gì?",
+            correct: "Hun trùng kiểm dịch (Fumigation chuẩn ISPM 15) và cấp chứng thư khử trùng",
+            w1: "Rửa bằng nước muối khử trùng",
+            w2: "Sơn bóng bề mặt gỗ",
+            w3: "Đóng gói bọc nilon hút chân không",
+            hint: "Quy chuẩn ISPM 15 yêu cầu hun trùng nhiệt (HT) hoặc thuốc Methyl Bromide để diệt trừ mầm bệnh côn trùng."
+        },
+
+        // --- 7. THANH TOÁN & BẢO HIỂM HÀNG HẢI ---
+        {
+            id: "q_lc_at_sight",
+            level: "hard",
+            topic: "Thanh Toán Quốc Tế",
+            q: "Trong phương thức thanh toán Thư tín dụng L/C Trả ngay (L/C At Sight), ai là bên cam kết thanh toán độc lập?",
+            correct: "Ngân hàng phát hành (Issuing Bank)",
+            w1: "Người mua hàng (Applicant)",
+            w2: "Hãng tàu vận chuyển (Carrier)",
+            w3: "Công ty bảo hiểm",
+            hint: "L/C là cam kết trả tiền vô điều kiện của Ngân hàng phát hành khi người bán xuất trình bộ chứng từ phù hợp."
+        },
+        {
+            id: "q_clean_bl",
+            level: "easy",
+            topic: "Chứng Từ Hàng Hải",
+            q: "Vận đơn đường biển được coi là 'Clean B/L' (Vận đơn hoàn hảo) khi đáp ứng điều kiện nào?",
+            correct: "Không có bất kỳ ghi chú xấu nào về khiếm khuyết của bao bì hoặc tình trạng hàng hóa khi nhận lên tàu",
+            w1: "Được in trên giấy sạch sẽ không bị lem mực",
+            w2: "Đã được đóng dấu đỏ bởi cơ quan hải quan",
+            w3: "Là bản scan gửi qua email",
+            hint: "Clean B/L chứng nhận hàng hóa được hãng tàu nhận trong tình trạng nguyên vẹn bên ngoài."
+        },
+        {
+            id: "q_clauses_a",
+            level: "hard",
+            topic: "Bảo Hiểm Hàng Hải",
+            q: "Điều kiện bảo hiểm hàng hải Loại A (Institute Cargo Clauses A) có phạm vi bồi thường như thế nào?",
+            correct: "Bảo hiểm 'Mọi rủi ro' (All Risks), trừ các điểm loại trừ đích danh trong hợp đồng",
+            w1: "Chỉ bồi thường khi tàu bị chìm hoặc đắm hoàn toàn",
+            w2: "Chỉ bảo hiểm tổn thất do cướp biển gây ra",
+            w3: "Chỉ bồi thường tối đa 50% giá trị hợp đồng",
+            hint: "ICC (A) là điều kiện bảo hiểm phạm vi rộng nhất bảo vệ quyền lợi tối đa cho chủ hàng."
+        },
+        {
+            id: "q_ga",
+            level: "hard",
+            topic: "Bảo Hiểm Hàng Hải",
+            q: "Khi tàu biển gặp bão lớn, thuyền trưởng lệnh vứt bớt container xuống biển để cứu tàu, tổn thất này gọi là gì?",
+            correct: "Tổn thất chung (General Average)",
+            w1: "Tổn thất riêng (Particular Average)",
+            w2: "Tổn thất toàn bộ thực tế",
+            w3: "Tai nạn rủi ro đơn phương",
+            hint: "Tổn thất chung là sự hy sinh cố ý vì sự an toàn chung, tất cả các bên có quyền lợi liên quan cùng đóng góp chia sẻ."
+        },
+        {
+            id: "q_do_fee",
+            level: "easy",
+            topic: "Chứng Từ Hàng Hải",
+            q: "Lệnh giao hàng D/O (Delivery Order) do chủ thể nào phát hành cho người nhận hàng (Consignee)?",
+            correct: "Hãng tàu hoặc công ty giao nhận Forwarder",
+            w1: "Cơ quan Hải quan cửa khẩu",
+            w2: "Ban quản lý khu công nghiệp",
+            w3: "Đội bảo vệ trạm gác cổng cảng",
+            hint: "Chủ hàng đổi B/L gốc lấy Lệnh giao hàng D/O từ hãng tàu/forwarder để mang ra cảng lấy hàng."
+        },
+        {
+            id: "q_lcl_cfs",
+            level: "easy",
+            topic: "Vận Tải Hàng Lẻ LCL",
+            q: "Phí CFS (Container Freight Station) phát sinh trong trường hợp vận chuyển hàng hóa nào?",
+            correct: "Hàng lẻ đóng ghép chung container (LCL - Less than Container Load)",
+            w1: "Hàng nguyên container đóng trọn gói (FCL)",
+            w2: "Hàng rời quặng sắt chở trên sà lan",
+            w3: "Hàng siêu trường siêu trọng chuyên dụng",
+            hint: "Hàng LCL phải đưa vào kho CFS để gom hàng và đóng/rút ruột container nên phát sinh phí CFS."
+        },
+        {
+            id: "q_ton_dong_90",
+            level: "hard",
+            topic: "Pháp Lý Hải Quan",
+            q: "Hàng hóa nhập khẩu lưu giữ tại bãi cảng quá 90 ngày không có người nhận sẽ được xử lý như thế nào?",
+            correct: "Cơ quan hải quan thông báo tìm chủ sở hữu, nếu quá hạn thông báo sẽ tịch thu bán đấu giá nộp ngân sách",
+            w1: "Hãng tàu được tự ý đem bán chia tiền cho thủy thủ",
+            w2: "Cho phép doanh nghiệp gần nhất vào chở về sử dụng miễn phí",
+            w3: "Tự động gửi trả hàng về lại nước xuất khẩu",
+            hint: "Điều 58 Luật Hải quan quy định hàng tồn đọng quá 90 ngày tại cảng sẽ lập hội đồng xử lý bán đấu giá sung công quỹ."
+        }
     ];
+
     var ORDER_TEMPLATES = [
-        { name: "Xuất khẩu Gốm Sứ đi Đức", easy: true, minVal: 18000000, maxVal: 38000000 },
-        { name: "Nhập khẩu Vải Cuộn từ Thượng Hải", easy: true, minVal: 22000000, maxVal: 39000000 },
-        { name: "Xuất khẩu Cà Phê sang Nhật Bản", easy: true, minVal: 25000000, maxVal: 40000000 },
-        { name: "Xuất khẩu Tôm Sú đông lạnh đi Mỹ", easy: false, minVal: 55000000, maxVal: 95000000 },
-        { name: "Nhập khẩu Máy CNC từ Châu Âu", easy: false, minVal: 65000000, maxVal: 140000000 }
+        { name: "Xuất khẩu Gốm Sứ Mỹ Nghệ đi Hamburg (Đức)", easy: true, minVal: 20000000, maxVal: 38000000 },
+        { name: "Nhập khẩu Cuộn Vải Dệt May từ Thượng Hải", easy: true, minVal: 22000000, maxVal: 42000000 },
+        { name: "Xuất khẩu Cà Phê Hạt Robusta sang Kobe (Nhật Bản)", easy: true, minVal: 25000000, maxVal: 45000000 },
+        { name: "Nhập khẩu Phụ Tùng Cơ Khí Ô Tô từ Busan (Hàn Quốc)", easy: true, minVal: 28000000, maxVal: 48000000 },
+        { name: "Xuất khẩu Gạo Hạt Dài ST25 đi Cảng Manila (Philippines)", easy: true, minVal: 26000000, maxVal: 46000000 },
+        { name: "Xuất khẩu Tôm Sú Đông Lạnh -18°C đi Los Angeles (Mỹ)", easy: false, minVal: 55000000, maxVal: 95000000 },
+        { name: "Nhập khẩu Dây Chuyền Máy Phay CNC từ Rotterdam (Châu Âu)", easy: false, minVal: 65000000, maxVal: 135000000 },
+        { name: "Xuất khẩu Hạt Điều Rang Muối sang Long Beach (Mỹ)", easy: false, minVal: 60000000, maxVal: 110000000 },
+        { name: "Nhập khẩu Hóa Chất Nhóm 3 (IMDG Flammable) từ Singapore", easy: false, minVal: 75000000, maxVal: 150000000 },
+        { name: "Nhập khẩu Lô Thiết Bị Viễn Thông 5G Qua Sân Bay Tân Sơn Nhất", easy: false, minVal: 80000000, maxVal: 160000000 }
     ];
+
+    // =========================================================================
+    // QUẢN LÝ TRẠNG THÁI GAME & CHỐNG BUG FARM
+    // =========================================================================
     function defaultState() {
         return {
             name: "Huy Nguyễn", money: 1000000, rep: 10, mas: 30, fuel: 2.0,
@@ -317,10 +1348,15 @@
             lastSalary: "", pid: ""
         };
     }
+
     var s = defaultState();
     var currentOrders = [];
     var clockTimer = null;
+    var isSubmitting = false; // Chống spam-click bug
+    var recentQuestions = []; // Bộ nhớ đệm chống trùng lặp câu hỏi giữa các đơn hàng
+
     function startGameNow() {
+        soundClick();
         document.getElementById('lobby-screen').style.display = 'none';
         document.getElementById('game-screen').style.display = 'block';
         var inp = document.getElementById('inp-name').value;
@@ -330,15 +1366,19 @@
         refreshUI();
         startClock();
     }
+
     function startClock() {
         if (clockTimer) clearInterval(clockTimer);
+        // Tốc độ đồng hồ hợp lý hơn: mỗi 2s thực tế trôi qua 3 phút game (không bòn rút tiền người chơi quá nhanh)
         clockTimer = setInterval(function() {
-            s.min += 11;
+            if (s.curOrder) return; // Tự động tạm dừng đồng hồ khi đang trong ca thi trắc nghiệm để người chơi suy nghĩ
+            s.min += 3;
             if (s.min >= 60) { s.min -= 60; s.hour++; }
             if (s.hour >= 24) { s.hour = 0; processNewDay(); }
             updateClockUI();
         }, 2000);
     }
+
     function updateClockUI() {
         var d = s.day < 10 ? "0" + s.day : s.day;
         var m = s.month < 10 ? "0" + s.month : s.month;
@@ -348,6 +1388,7 @@
         document.getElementById('ui-payout').innerText = s.payoutDays;
         document.getElementById('ui-reset-left').innerText = s.resetLeft;
     }
+
     function processNewDay() {
         s.day++;
         if (s.day > 30) {
@@ -355,7 +1396,11 @@
             if (s.month > 12) { s.month = 1; s.year++; }
         }
         var r = getRank();
-        s.money = s.money - 50000 + r.supDay;
+        // Chi phí ăn uống sinh hoạt trừ khi sang ngày mới, được bù bởi trợ cấp chức vụ
+        var dailyCost = 50000;
+        var netDaily = r.supDay - dailyCost;
+        s.money += netDaily;
+
         s.payoutDays--;
         if (s.payoutDays <= 0) {
             s.payoutDays = 3;
@@ -363,7 +1408,7 @@
                 var paid = s.comm;
                 s.money += paid;
                 s.comm = 0;
-                showNotice("💳 Thanh toán chiết khấu: +" + fmt(paid) + "đ vào ví!", false);
+                showNotice("💳 Đã thanh toán hoa hồng định kỳ: +" + fmt(paid) + "đ vào tài khoản!", false);
             }
         }
         s.resetCycleDays--;
@@ -371,65 +1416,206 @@
         updateClockUI();
         refreshUI();
     }
-    function nextDayManual() { s.hour = 8; s.min = 0; processNewDay(); }
-    // Dựng 1 câu hỏi từ vị trí trong QUESTION_POOL (pi) và thứ tự đáp án (order).
-    // Lưu pi + order giúp sao lưu/khôi phục đúng câu đang làm dở.
-    function buildQuestion(pi, order) {
-        var item = QUESTION_POOL[pi];
-        var all = [
-            { text: item.correct, isCorrect: true },
-            { text: item.w1, isCorrect: false },
-            { text: item.w2, isCorrect: false },
-            { text: item.w3, isCorrect: false }
-        ];
-        var choices = [];
-        for (var i = 0; i < order.length; i++) choices.push(all[order[i]]);
-        return { pi: pi, order: order, q: item.q, hint: item.hint, choices: choices };
+
+    function nextDayManual() {
+        soundClick();
+        s.hour = 8; s.min = 0;
+        processNewDay();
     }
-    function buildSixShuffledQuestions() {
-        var idx = [];
-        for (var i = 0; i < QUESTION_POOL.length; i++) idx.push(i);
-        idx = shuffleArray(idx).slice(0, 6);
-        var formatted = [];
-        for (var j = 0; j < idx.length; j++) {
-            formatted.push(buildQuestion(idx[j], shuffleArray([0, 1, 2, 3])));
+
+    // =========================================================================
+    // THUẬT TOÁN TẠO CÂU HỎI THÔNG MINH (CHỐNG TRÙNG LẶP TUYỆT ĐỐI)
+    // =========================================================================
+    function getDiverseQuestionsForOrder(isEasy, count) {
+        count = count || 6;
+        var candidatePool = QUESTION_POOL.filter(function(q) {
+            return isEasy ? (q.level === "easy") : (q.level === "hard" || q.level === "easy");
+        });
+
+        // Lọc bỏ những câu hỏi vừa xuất hiện trong các đơn hàng gần đây
+        var freshPool = candidatePool.filter(function(q) {
+            return recentQuestions.indexOf(q.id) === -1;
+        });
+
+        // Nếu pool mới không đủ 6 câu thì quay vòng tái nạp lại
+        if (freshPool.length < count) {
+            recentQuestions = recentQuestions.slice(-10);
+            freshPool = candidatePool.filter(function(q) {
+                return recentQuestions.indexOf(q.id) === -1;
+            });
+            if (freshPool.length < count) freshPool = candidatePool;
         }
-        return formatted;
+
+        var selected = shuffleArray(freshPool).slice(0, count);
+
+        // Lưu vết vào recentQuestions để không bị lặp lại ở đơn tiếp theo
+        selected.forEach(function(item) {
+            if (recentQuestions.indexOf(item.id) === -1) {
+                recentQuestions.push(item.id);
+            }
+        });
+        if (recentQuestions.length > 36) {
+            recentQuestions = recentQuestions.slice(-20);
+        }
+
+        // Đóng gói cấu trúc câu hỏi có xáo trộn 4 đáp án A-B-C-D
+        return selected.map(function(item) {
+            var all = [
+                { text: item.correct, isCorrect: true },
+                { text: item.w1, isCorrect: false },
+                { text: item.w2, isCorrect: false },
+                { text: item.w3, isCorrect: false }
+            ];
+            var order = shuffleArray([0, 1, 2, 3]);
+            var choices = order.map(function(idx) { return all[idx]; });
+            return {
+                id: item.id,
+                q: item.q,
+                topic: item.topic || "Nghiệp vụ Logistics",
+                hint: item.hint,
+                choices: choices,
+                order: order
+            };
+        });
     }
+
     function generateDiverseOrders() {
         currentOrders = [];
-        var easyPool = shuffleArray(ORDER_TEMPLATES.filter(function(t){ return t.easy; }));
-        var hardPool = shuffleArray(ORDER_TEMPLATES.filter(function(t){ return !t.easy; }));
-        var selected = [easyPool[0], easyPool[1], hardPool[0], hardPool[1]];
-        for (var i = 0; i < selected.length; i++) {
-            var tpl = selected[i];
+        var easyTemplates = shuffleArray(ORDER_TEMPLATES.filter(function(t){ return t.easy; }));
+        var hardTemplates = shuffleArray(ORDER_TEMPLATES.filter(function(t){ return !t.easy; }));
+
+        // Luôn hiển thị 2 đơn dễ và 2 đơn khó trên sàn
+        var selectedTemplates = [easyTemplates[0], easyTemplates[1], hardTemplates[0], hardTemplates[1]];
+
+        for (var i = 0; i < selectedTemplates.length; i++) {
+            var tpl = selectedTemplates[i];
             var portObj = PORTS[Math.floor(Math.random() * PORTS.length)];
             var val = Math.round((tpl.minVal + Math.random() * (tpl.maxVal - tpl.minVal)) / 1000000) * 1000000;
+
             currentOrders.push({
                 id: "ORD-" + Math.floor(1000 + Math.random() * 9000),
                 title: (tpl.easy ? "[Dễ] " : "[Khó] ") + tpl.name,
-                easy: tpl.easy, val: val, port: portObj.name, km: portObj.km, fuel: portObj.fuel,
-                repGain: tpl.easy ? 2 : 4, masGain: tpl.easy ? 5 : 8, reqMas: tpl.easy ? 0 : 70,
-                questions: buildSixShuffledQuestions()
+                easy: tpl.easy,
+                val: val,
+                port: portObj.name,
+                km: portObj.km,
+                fuel: portObj.fuel,
+                repGain: tpl.easy ? 2 : 4,
+                masGain: tpl.easy ? 5 : 8,
+                reqMas: tpl.easy ? 0 : 70,
+                questions: getDiverseQuestionsForOrder(tpl.easy, 6)
             });
         }
         renderOrders();
     }
+
+    // =========================================================================
+    // KẾT NỐI GEMINI AI HOẶC RESET SÀN GIAO DỊCH
+    // =========================================================================
     function resetOrderBoard(useGemini) {
-        if (s.resetLeft <= 0) { showNotice("❌ Đã hết lượt Reset trong chu kỳ!", true); return; }
+        soundClick();
+        if (s.resetLeft <= 0) {
+            showNotice("❌ Bạn đã sử dụng hết lượt đổi lô trong chu kỳ 5 ngày!", true);
+            return;
+        }
+
+        if (useGemini) {
+            if (!s.apiKey) {
+                showNotice("💡 Hãy bấm nút '⚙️ Cài đặt' ở góc trên để dán Google Gemini API Key trước khi dùng tính năng Tạo Đơn Từ AI!", true);
+                toggleSettings();
+                return;
+            }
+            fetchGeminiAIOrders();
+            return;
+        }
+
         s.resetLeft--;
         updateClockUI();
-        showNotice("🔄 Đã làm mới sàn lô hàng!", false);
+        showNotice("🔄 Đã làm mới sàn giao dịch với 4 lô hàng nghiệp vụ mới!", false);
         generateDiverseOrders();
     }
+
+    function fetchGeminiAIOrders() {
+        showNotice("✨ Đang kết nối Google Gemini API để tạo kịch bản lô hàng đặc biệt...", false);
+        var promptText = "Bạn là chuyên gia Logistics Việt Nam. Hãy tạo 2 lô hàng xuất nhập khẩu thực tế (1 dễ, 1 khó) định dạng JSON. Mỗi lô hàng có các trường: title, easy (boolean), val (số tiền từ 30000000 đến 120000000), port (Cát Lái hoặc Cái Mép), km (30 hoặc 120), fuel (1 hoặc 4), questions: mảng gồm 6 câu hỏi nghiệp vụ trắc nghiệm 4 đáp án (q, correct, w1, w2, w3, hint). Chỉ trả về JSON thuần túy, không có markdown.";
+
+        var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + s.apiKey;
+        fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: promptText }] }],
+                generationConfig: { responseMimeType: "application/json" }
+            })
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error("Mã lỗi máy chủ: " + res.status);
+            return res.json();
+        })
+        .then(function(data) {
+            var rawText = data.candidates[0].content.parts[0].text;
+            var aiOrders = JSON.parse(rawText);
+            if (Array.isArray(aiOrders) && aiOrders.length >= 2) {
+                s.resetLeft--;
+                updateClockUI();
+                // Map lại câu hỏi AI theo cấu trúc game
+                var formattedAI = aiOrders.slice(0, 2).map(function(item) {
+                    var qs = item.questions.map(function(qItem) {
+                        var all = [
+                            { text: qItem.correct, isCorrect: true },
+                            { text: qItem.w1, isCorrect: false },
+                            { text: qItem.w2, isCorrect: false },
+                            { text: qItem.w3, isCorrect: false }
+                        ];
+                        var order = shuffleArray([0, 1, 2, 3]);
+                        return {
+                            id: "ai_" + Math.random().toString(36).substring(7),
+                            q: qItem.q,
+                            topic: "AI Kịch Bản Thực Tế",
+                            hint: qItem.hint || "Quy chuẩn nghiệp vụ quốc tế.",
+                            choices: order.map(function(i){ return all[i]; }),
+                            order: order
+                        };
+                    });
+                    return {
+                        id: "AI-ORD-" + Math.floor(1000 + Math.random() * 9000),
+                        title: "[AI Generated] " + item.title,
+                        easy: !!item.easy,
+                        val: Number(item.val) || 50000000,
+                        port: item.port || "Cảng Tân Cảng Cát Lái",
+                        km: Number(item.km) || 30,
+                        fuel: Number(item.fuel) || 1.0,
+                        repGain: item.easy ? 3 : 5,
+                        masGain: item.easy ? 6 : 10,
+                        reqMas: item.easy ? 0 : 70,
+                        questions: qs
+                    };
+                });
+                currentOrders = formattedAI.concat(currentOrders.slice(0, 2));
+                renderOrders();
+                showNotice("✨ Đã tạo thành công lô hàng độc quyền từ Gemini AI!", false);
+            } else {
+                throw new Error("Dữ liệu AI trả về không đúng cấu trúc.");
+            }
+        })
+        .catch(function(err) {
+            showNotice("⚠️ Lỗi AI (" + err.message + "). Hệ thống tự động chuyển sang ngân hàng câu hỏi chuẩn.", true);
+            generateDiverseOrders();
+        });
+    }
+
+    // =========================================================================
+    // RENDER SÀN LÔ HÀNG & THAO TÁC NHẬN ĐƠN
+    // =========================================================================
     function renderOrders() {
         var tut = document.getElementById('tutorial-box');
         if (s.done < 3) {
             tut.style.display = 'block';
-            tut.innerHTML = "<b>🧭 HƯỚNG DẪN (Màn " + (s.done + 1) + "/3):</b> Hoàn thành 3 lô để lên chính thức. Mỗi lô gồm 6 câu hỏi, đúng ≥ 5 câu mới đậu.";
+            tut.innerHTML = "<b>🧭 HƯỚNG DẪN THỰC TẬP (Tiến độ: " + s.done + "/3 lô):</b> Hoàn thành 3 lô hàng để lên 'Nhân viên chính thức'. Mỗi lô gồm 6 câu hỏi nghiệp vụ, đạt ≥ 5/6 câu mới hoàn thành thủ tục.";
         } else {
             tut.style.display = 'none';
         }
+
         var r = getRank();
         var html = "";
         for (var i = 0; i < currentOrders.length; i++) {
@@ -437,128 +1623,250 @@
             var locked = s.mas < o.reqMas;
             var commVal = Math.round(o.val * r.rate);
             html += '<div class="item-box ' + (o.easy ? 'easy-order' : 'hard-order') + '"><div>' +
-                '<div style="font-weight:bold; color:#0369a1; font-size:13.5px; margin-bottom:4px;">' + o.title + '</div>' +
-                '<div style="font-size:12px; margin-bottom:3px;">💰 Giá trị: <b>' + fmt(o.val) + 'đ</b></div>' +
-                '<div style="font-size:12px; margin-bottom:3px;">📍 ' + o.port + ' (Tốn ' + o.fuel + 'l xăng)</div>' +
-                '<div style="font-size:12px; margin-bottom:5px;">💵 Chiết khấu: <b style="color:#16a34a;">+' + fmt(commVal) + 'đ</b></div>' +
-                (o.reqMas > 0 ? '<div style="font-size:11.5px; font-weight:bold; color:' + (locked ? '#dc2626' : '#16a34a') + ';">🔒 Cần Thông thạo ≥ ' + o.reqMas + '</div>' : '') +
-                '</div><button type="button" class="btn" style="margin-top:8px;" ' + (locked ? 'disabled' : '') + ' onclick="startOrder(' + i + ')">' +
-                (locked ? 'Cần Thông thạo ≥ 70' : '🚚 Nhận Đơn (6 Câu)') + '</button></div>';
+                '<div style="font-weight:800; color:#0369a1; font-size:14px; margin-bottom:5px;">' + o.title + '</div>' +
+                '<div style="font-size:12px; margin-bottom:3px;">💰 Giá trị khai báo: <b>' + fmt(o.val) + 'đ</b></div>' +
+                '<div style="font-size:12px; margin-bottom:3px;">📍 ' + o.port + ' (Tốn ' + o.fuel + ' lít xăng)</div>' +
+                '<div style="font-size:12px; margin-bottom:6px;">💵 Hoa hồng dự kiến: <b style="color:#16a34a;">+' + fmt(commVal) + 'đ</b></div>' +
+                (o.reqMas > 0 ? '<div style="font-size:11.5px; font-weight:700; color:' + (locked ? '#dc2626' : '#16a34a') + ';">🔒 Cần Thông Thạo ≥ ' + o.reqMas + '</div>' : '') +
+                '</div><button type="button" class="btn" style="margin-top:10px; width:100%;" ' + (locked ? 'disabled' : '') + ' onclick="startOrder(' + i + ')">' +
+                (locked ? '🔒 Chưa Đủ Thông Thạo' : '🚚 Nhận Xử Lý Lô Hàng (6 Câu)') + '</button></div>';
         }
         document.getElementById('order-list').innerHTML = html;
     }
+
     function startOrder(idx) {
+        soundClick();
         var o = currentOrders[idx];
-        if (s.fuel < o.fuel) { showNotice("⛽ Không đủ xăng đi " + o.port + "!", true); return; }
+        if (s.fuel < o.fuel) {
+            showNotice("⛽ Xe của bạn không đủ " + o.fuel + " lít xăng để di chuyển đến " + o.port + "! Vui lòng đổ xăng ở cột bên trái.", true);
+            return;
+        }
+
         s.fuel = Math.round((s.fuel - o.fuel) * 10) / 10;
-        o.questions = buildSixShuffledQuestions();
-        s.curOrder = o; s.curStep = 0; s.correctCount = 0; s.wrongCount = 0;
+        // Đảm bảo bốc bộ câu hỏi mới hoàn toàn không trùng lặp nếu chưa có
+        if (!o.questions || o.questions.length !== 6) {
+            o.questions = getDiverseQuestionsForOrder(o.easy, 6);
+        }
+
+        s.curOrder = o;
+        s.curStep = 0;
+        s.correctCount = 0;
+        s.wrongCount = 0;
+        isSubmitting = false;
+
         document.getElementById('list-area').style.display = 'none';
         document.getElementById('step-area').style.display = 'block';
         refreshUI();
         renderCurrentQuestion();
     }
+
+    // =========================================================================
+    // XỬ LÝ CÂU HỎI TRẮC NGHIỆM & CHỐNG SPAM CLICK BUG
+    // =========================================================================
     function renderCurrentQuestion() {
         var o = s.curOrder;
-        var qObj = o.questions[s.curStep];
-        var labels = ["A", "B", "C", "D"];
-        var buttonsHtml = "";
-        for (var i = 0; i < qObj.choices.length; i++) {
-            buttonsHtml += '<button type="button" class="opt-btn" onclick="submitAnswer(' + i + ')"><b>' + labels[i] + '.</b> ' + qObj.choices[i].text + '</button>';
-        }
-        document.getElementById('step-area').innerHTML =
-            '<div class="quiz-status-bar"><span>' + o.title + '</span><span>Câu: ' + (s.curStep + 1) + '/6</span><span style="color:#16a34a;">Đúng: ' + s.correctCount + '</span><span style="color:#dc2626;">Sai: ' + s.wrongCount + '/1</span></div>' +
-            '<div style="background:#f0f9ff; border:1px solid #7dd3fc; padding:12px; border-radius:10px;">' +
-            '<div style="font-weight:bold; font-size:13.5px; margin-bottom:8px; line-height:1.4;">' + qObj.q + '</div>' +
-            buttonsHtml + '</div>';
-    }
-    function submitAnswer(choiceIdx) {
-        var o = s.curOrder;
-        var qObj = o.questions[s.curStep];
-        var picked = qObj.choices[choiceIdx];
-        var r = getRank();
-        if (picked.isCorrect) { s.correctCount++; } else { s.wrongCount++; }
-        if (s.wrongCount >= 2) {
-            s.rep = Math.max(0, s.rep - 3);
-            showNotice("💥 Đơn hàng thất bại do sai quá 2 câu!", true);
+        if (!o || s.curStep >= o.questions.length) {
             endOrderSession();
             return;
         }
+
+        var qObj = o.questions[s.curStep];
+        var labels = ["A", "B", "C", "D"];
+        var buttonsHtml = "";
+
+        for (var i = 0; i < qObj.choices.length; i++) {
+            buttonsHtml += '<button type="button" class="opt-btn" id="opt-btn-' + i + '" onclick="submitAnswer(' + i + ')">' +
+                '<b style="color:#0284c7; margin-right:8px; font-size:14px;">' + labels[i] + '.</b> ' +
+                '<span>' + qObj.choices[i].text + '</span>' +
+                '</button>';
+        }
+
+        document.getElementById('step-area').innerHTML =
+            '<div class="quiz-status-bar">' +
+                '<span>' + o.title + '</span>' +
+                '<span>Tiến độ: ' + (s.curStep + 1) + '/6</span>' +
+                '<span style="color:#16a34a;">✅ Đúng: ' + s.correctCount + '</span>' +
+                '<span style="color:#dc2626;">❌ Sai: ' + s.wrongCount + '/1</span>' +
+            '</div>' +
+            '<div style="background:#ffffff; border:1px solid #bae6fd; padding:16px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.03);">' +
+                '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+                    '<span style="font-size:11px; font-weight:800; background:#e0f2fe; color:#0369a1; padding:3px 8px; border-radius:12px;">' + (qObj.topic || "Nghiệp vụ Logistics") + '</span>' +
+                    '<span style="font-size:12px; color:#64748b;">Đạt ≥ 5 câu để thông quan</span>' +
+                '</div>' +
+                '<div style="font-weight:700; font-size:14px; margin-bottom:12px; line-height:1.5; color:#0f172a;">' + qObj.q + '</div>' +
+                '<div id="options-group">' + buttonsHtml + '</div>' +
+                '<div id="feedback-area"></div>' +
+            '</div>';
+
+        isSubmitting = false;
+    }
+
+    function submitAnswer(choiceIdx) {
+        if (isSubmitting) return; // Khóa ngăn chặn spam-click nhiều lần gây bug nhảy bước hoặc lỗi logic
+        isSubmitting = true;
+
+        var o = s.curOrder;
+        var qObj = o.questions[s.curStep];
+        var picked = qObj.choices[choiceIdx];
+
+        // Khóa tất cả các nút
+        for (var i = 0; i < qObj.choices.length; i++) {
+            var btn = document.getElementById('opt-btn-' + i);
+            if (btn) btn.disabled = true;
+        }
+
+        var pickedBtn = document.getElementById('opt-btn-' + choiceIdx);
+
+        if (picked.isCorrect) {
+            soundCorrect();
+            s.correctCount++;
+            if (pickedBtn) pickedBtn.className = "opt-btn correct-opt";
+        } else {
+            soundWrong();
+            s.wrongCount++;
+            if (pickedBtn) pickedBtn.className = "opt-btn wrong-opt";
+            // Tìm và sáng xanh đáp án đúng
+            for (var j = 0; j < qObj.choices.length; j++) {
+                if (qObj.choices[j].isCorrect) {
+                    var cBtn = document.getElementById('opt-btn-' + j);
+                    if (cBtn) cBtn.className = "opt-btn correct-opt";
+                    break;
+                }
+            }
+        }
+
+        // Hiển thị khung giải thích nghiệp vụ
+        var feedbackArea = document.getElementById('feedback-area');
+        var explanation = qObj.hint ? ('<div class="explanation-card"><b>💡 Giải thích nghiệp vụ:</b> ' + qObj.hint + '</div>') : '';
+
+        var nextBtnHtml = '<button type="button" class="btn btn-success" style="width:100%; margin-top:12px; padding:11px;" onclick="goToNextStep()">' +
+            (s.curStep === 5 ? '🏁 Hoàn Tất Kiểm Tra Lô Hàng' : 'Tiếp Tục Câu Sau ➔') +
+            '</button>';
+
+        feedbackArea.innerHTML = explanation + nextBtnHtml;
+
+        // Nếu người chơi sai đến câu thứ 2 thì thất bại ngay
+        if (s.wrongCount >= 2) {
+            feedbackArea.innerHTML = explanation +
+                '<div style="color:#dc2626; font-weight:700; margin:10px 0; font-size:13px;">💥 Đơn hàng không đủ điều kiện thông quan vì sai quá 1 câu!</div>' +
+                '<button type="button" class="btn btn-danger" style="width:100%; padding:11px;" onclick="failOrderSession()">Rút Kinh Nghiệm & Trở Về Sàn</button>';
+        }
+    }
+
+    function goToNextStep() {
+        soundClick();
         s.curStep++;
         if (s.curStep >= 6) {
-            s.done++;
-            var earnedComm = Math.round(o.val * r.rate);
-            s.comm += earnedComm;
-            s.rep = Math.min(100, s.rep + o.repGain);
-            s.mas = Math.min(100, s.mas + o.masGain);
-            showNotice("🎉 Hoàn thành lô hàng! Thưởng +" + fmt(earnedComm) + "đ chiết khấu.", false);
-            endOrderSession();
+            completeOrderSession();
         } else {
             renderCurrentQuestion();
         }
     }
+
+    function failOrderSession() {
+        s.rep = Math.max(0, s.rep - 3);
+        showNotice("💥 Lô hàng thất bại do không đạt tiêu chuẩn nghiệp vụ (sai ≥ 2 câu). Điểm uy tín bị trừ 3 điểm.", true);
+        endOrderSession();
+    }
+
+    function completeOrderSession() {
+        var o = s.curOrder;
+        var r = getRank();
+        s.done++;
+        var earnedComm = Math.round(o.val * r.rate);
+        s.comm += earnedComm;
+        s.rep = Math.min(100, s.rep + o.repGain);
+        s.mas = Math.min(100, s.mas + o.masGain);
+
+        showNotice("🎉 XUẤT SẮC! Hoàn thành thông quan " + o.title + ". Tích lũy +" + fmt(earnedComm) + "đ hoa hồng!", false);
+        endOrderSession();
+    }
+
     function endOrderSession() {
         s.curOrder = null;
+        isSubmitting = false;
         document.getElementById('step-area').style.display = 'none';
         document.getElementById('list-area').style.display = 'block';
         generateDiverseOrders();
         refreshUI();
     }
+
     function buyFuel() {
-        if (s.money < 42000) { showNotice("❌ Không đủ 42,000đ!", true); return; }
+        soundClick();
+        if (s.money < 42000) {
+            showNotice("❌ Tài khoản của bạn không đủ 42,000đ để đổ 2 lít xăng!", true);
+            return;
+        }
         s.money -= 42000;
         s.fuel = Math.round((s.fuel + 2.0) * 10) / 10;
-        showNotice("⛽ Đã đổ 2 lít xăng!", false);
+        showNotice("⛽ Đã đổ 2 lít xăng A95 thành công! Xe có thể chạy thêm 60 km.", false);
         refreshUI();
     }
+
+    // =========================================================================
+    // HỌC CHỨNG CHỈ ĐÀO TẠO
+    // =========================================================================
     function renderCourses() {
         var html = "";
         for (var i = 0; i < COURSES.length; i++) {
             var c = COURSES[i];
             var learned = s.courses.indexOf(c.id) !== -1;
             html += '<div class="item-box"><div>' +
-                '<div style="font-weight:bold; color:#0369a1; font-size:13px;">📜 ' + c.name + '</div>' +
-                '<div style="font-size:11.5px; color:#475569; margin:4px 0;">' + c.desc + '</div>' +
+                '<div style="font-weight:800; color:#0369a1; font-size:13.5px;">📜 ' + c.name + '</div>' +
+                '<div style="font-size:12px; color:#64748b; margin:5px 0;">' + c.desc + '</div>' +
                 '<div style="font-size:12px; margin-bottom:3px;">💰 Học phí: <b style="color:#d97706;">' + fmt(c.cost) + 'đ</b></div>' +
-                '<div style="font-size:12px; color:#16a34a; font-weight:bold;">📘 Thông thạo: +' + c.gain + '</div>' +
-                '</div><button type="button" class="btn" style="margin-top:8px; font-size:12px;" ' + (learned ? 'disabled' : '') + ' onclick="buyCourse(\'' + c.id + '\')">' +
-                (learned ? 'Đã sở hữu' : 'Đăng ký học') + '</button></div>';
+                '<div style="font-size:12px; color:#16a34a; font-weight:700;">📘 Độ thông thạo tăng: +' + c.gain + ' điểm</div>' +
+                '</div><button type="button" class="btn" style="margin-top:10px; font-size:12px; width:100%;" ' + (learned ? 'disabled' : '') + ' onclick="buyCourse(\'' + c.id + '\')">' +
+                (learned ? '✔ Đã Sở Hữu Chứng Chỉ' : '🎓 Đăng Ký Khóa Học Ngay') + '</button></div>';
         }
         document.getElementById('course-list').innerHTML = html;
     }
+
     function buyCourse(id) {
+        soundClick();
         var c = COURSES.find(function(x){ return x.id === id; });
-        if (s.money < c.cost) { showNotice("❌ Không đủ học phí " + fmt(c.cost) + "đ!", true); return; }
+        if (s.money < c.cost) {
+            showNotice("❌ Bạn không đủ tiền đóng học phí " + fmt(c.cost) + "đ cho khóa " + c.name + "!", true);
+            return;
+        }
         s.money -= c.cost;
         s.mas = Math.min(100, s.mas + c.gain);
         s.courses.push(id);
-        showNotice("🎓 Đã học xong " + c.name + "!", false);
+        showNotice("🎓 Chúc mừng bạn đã hoàn thành xuất sắc khóa học " + c.name + "!", false);
         refreshUI();
         renderCourses();
         renderOrders();
     }
+
+    // =========================================================================
+    // BẢNG LƯƠNG & CHẾ ĐỘ THƯỞNG
+    // =========================================================================
     function calcPayroll() {
         var r = getRank();
         var supMonth = r.supDay * 30;
         var gross = r.sal + r.resp + supMonth;
         var tax = Math.round(Math.max(0, gross - 11000000) * 0.10);
-        var insurance = r.min > 0 ? 2000000 : 0; // Thực tập sinh không bị khấu trừ
+        var insurance = r.min > 0 ? 1500000 : 0;
         var before = gross - tax - insurance;
         var finePaid = Math.min(s.fine, Math.max(0, before));
         return { r: r, supMonth: supMonth, gross: gross, tax: tax, insurance: insurance, finePaid: finePaid, net: before - finePaid };
     }
+
     function monthKey() { return s.year + "-" + s.month; }
+
     function renderPayroll() {
         var p = calcPayroll();
         var r = p.r;
         var claimed = (s.lastSalary === monthKey());
+
         document.getElementById('payroll-box').innerHTML =
-            "• Chức vụ: <b>" + r.name + "</b> | Lương: <b>+" + fmt(r.sal) + "đ</b><br>" +
-            "• Hỗ trợ: <b>+" + fmt(p.supMonth) + "đ</b> | Thuế TNCN: <b style='color:#dc2626;'>-" + fmt(p.tax) + "đ</b><br>" +
-            (p.insurance > 0 ? "• Khấu trừ bảo hiểm: <b style='color:#dc2626;'>-" + fmt(p.insurance) + "đ</b><br>" : "") +
-            (p.finePaid > 0 ? "• Trừ biên bản phạt: <b style='color:#dc2626;'>-" + fmt(p.finePaid) + "đ</b><br>" : "") +
-            "👉 <b>Thực lĩnh Net: <span style='color:#16a34a;'>" + fmt(p.net) + "đ</span></b>" +
-            (claimed ? "<br><span style='color:#d97706;'>✔ Tháng " + s.month + "/" + s.year + " đã quyết toán.</span>" : "");
+            "• Chức danh hiện tại: <b>" + r.name + "</b> | Lương ngạch bậc: <b>+" + fmt(r.sal) + "đ</b><br>" +
+            "• Phụ cấp trách nhiệm: <b>+" + fmt(r.resp) + "đ</b> | Trợ cấp công tác: <b>+" + fmt(p.supMonth) + "đ</b><br>" +
+            "• Khấu trừ thuế TNCN: <b style='color:#dc2626;'>-" + fmt(p.tax) + "đ</b> | Khấu trừ BHXH: <b style='color:#dc2626;'>-" + fmt(p.insurance) + "đ</b><br>" +
+            (p.finePaid > 0 ? "• Trừ nợ biên bản xử phạt: <b style='color:#dc2626;'>-" + fmt(p.finePaid) + "đ</b><br>" : "") +
+            "<div style='margin-top:6px; font-size:13.5px;'>👉 <b>Thực lĩnh tháng này: <span style='color:#16a34a;'>" + fmt(p.net) + "đ</span></b></div>" +
+            (claimed ? "<div style='color:#d97706; font-weight:700; margin-top:4px;'>✔ Tháng " + s.month + "/" + s.year + " đã được quyết toán chi trả đầy đủ.</div>" : "");
+
         var rows = "";
         for (var i = 0; i < RANKS.length; i++) {
             var item = RANKS[i];
@@ -569,29 +1877,36 @@
         }
         document.getElementById('rank-tbody').innerHTML = rows;
     }
+
     function claimMonthlySalary() {
+        soundClick();
         if (s.lastSalary === monthKey()) {
-            showNotice("❌ Tháng " + s.month + "/" + s.year + " bạn đã quyết toán lương rồi!", true);
+            showNotice("❌ Bạn đã nhận lương tháng " + s.month + "/" + s.year + " rồi. Vui lòng chờ sang tháng tiếp theo!", true);
             return;
         }
         var p = calcPayroll();
         s.money += p.net;
         s.fine -= p.finePaid;
         s.lastSalary = monthKey();
-        showNotice("🏦 Quyết toán lương tháng: +" + fmt(p.net) + "đ.", false);
+        showNotice("🏦 Quyết toán lương tháng " + s.month + " thành công: +" + fmt(p.net) + "đ đã chuyển vào tài khoản!", false);
         refreshUI();
         renderPayroll();
     }
+
     function getRank() {
         var r = RANKS[0];
-        for (var i = 0; i < RANKS.length; i++) { if (s.done >= RANKS[i].min) r = RANKS[i]; }
+        for (var i = 0; i < RANKS.length; i++) {
+            if (s.done >= RANKS[i].min) r = RANKS[i];
+        }
         return r;
     }
+
     function getScale(val) {
         if (val <= 30) return { txt: "Cảnh báo đỏ", cls: "tag-red", col: "#dc2626" };
         if (val <= 70) return { txt: "Bình thường", cls: "tag-norm", col: "#0284c7" };
         return { txt: "Tốt", cls: "tag-good", col: "#16a34a" };
     }
+
     function refreshUI() {
         var r = getRank();
         document.getElementById('ui-name').innerText = s.name;
@@ -603,12 +1918,14 @@
         document.getElementById('ui-rate').innerText = (r.rate * 100).toFixed(1).replace('.0','') + "% / lô";
         document.getElementById('ui-fine').innerText = fmt(s.fine) + "đ";
         document.getElementById('ui-fuel').innerText = s.fuel + " lít (" + Math.round(s.fuel * 30) + " km)";
+
         var repSt = getScale(s.rep);
         document.getElementById('ui-rep').innerText = s.rep;
         document.getElementById('tag-rep').innerText = repSt.txt;
         document.getElementById('tag-rep').className = "tag " + repSt.cls;
         document.getElementById('bar-rep').style.width = s.rep + "%";
         document.getElementById('bar-rep').style.background = repSt.col;
+
         var masSt = getScale(s.mas);
         document.getElementById('ui-mas').innerText = s.mas;
         document.getElementById('tag-mas').innerText = masSt.txt;
@@ -616,6 +1933,7 @@
         document.getElementById('bar-mas').style.width = s.mas + "%";
         document.getElementById('bar-mas').style.background = masSt.col;
     }
+
     function showNotice(msg, isError) {
         var box = document.getElementById('notice-box');
         box.style.display = 'block';
@@ -624,7 +1942,9 @@
         box.style.color = isError ? '#991b1b' : '#166534';
         box.innerHTML = msg;
     }
+
     function showTab(t) {
+        soundClick();
         var tabs = ['work', 'study', 'pay', 'rank'];
         for (var i = 0; i < tabs.length; i++) {
             var id = tabs[i];
@@ -635,17 +1955,23 @@
         if (t === 'pay') renderPayroll();
         if (t === 'rank') loadLeaderboard();
     }
+
     function toggleSettings() {
+        soundClick();
         var box = document.getElementById('settings-box');
         box.style.display = (box.style.display === 'block') ? 'none' : 'block';
     }
+
     function saveApiKey() {
+        soundClick();
         s.apiKey = document.getElementById('inp-api-key').value.trim();
-        showNotice("✅ Đã lưu API Key!", false);
+        showNotice("✅ Đã lưu Google Gemini API Key vào hệ thống thành công!", false);
     }
 
-    // ================= MÃ SAO LƯU =================
-    var BACKUP_PREFIX = "VLS1";
+    // =========================================================================
+    // HỆ THỐNG MÃ SAO LƯU VÁN CHƠI
+    // =========================================================================
+    var BACKUP_PREFIX = "VLS45";
 
     function toB64(str) {
         var bytes = new TextEncoder().encode(str), bin = "";
@@ -671,73 +1997,41 @@
         var out = String(v === undefined || v === null ? def : v).replace(/[<>&"'`\\]/g, "").trim();
         return (out.slice(0, maxLen)) || def;
     }
-    function packOrder(o, keepQuestions) {
-        var p = {};
-        for (var k in o) { if (k !== "questions") p[k] = o[k]; }
-        if (keepQuestions && o.questions) {
-            p.qs = o.questions.map(function(q) { return [q.pi, q.order]; });
-        }
-        return p;
-    }
-    function unpackOrder(p) {
-        if (!p || typeof p !== "object") return null;
-        var o = {
-            id: cleanText(p.id, "ORD-0000", 12),
-            title: cleanText(p.title, "Lô hàng", 80),
-            easy: !!p.easy,
-            val: clampNum(p.val, 20000000, 0, 1e10),
-            port: cleanText(p.port, "Cảng Cát Lái", 40),
-            km: clampNum(p.km, 30, 0, 1000),
-            fuel: clampNum(p.fuel, 1, 0, 20),
-            repGain: clampNum(p.repGain, 2, 0, 100),
-            masGain: clampNum(p.masGain, 5, 0, 100),
-            reqMas: clampNum(p.reqMas, 0, 0, 100),
-            questions: []
-        };
-        if (Array.isArray(p.qs)) {
-            for (var i = 0; i < p.qs.length; i++) {
-                var pair = p.qs[i];
-                var pi = pair && pair[0], order = pair && pair[1];
-                var okOrder = Array.isArray(order) && order.length === 4 &&
-                    [0, 1, 2, 3].every(function(n) { return order.indexOf(n) !== -1; });
-                if (typeof pi !== "number" || !QUESTION_POOL[pi] || !okOrder) { o.questions = []; break; }
-                o.questions.push(buildQuestion(pi, order));
-            }
-        }
-        if (o.questions.length !== 6) o.questions = buildSixShuffledQuestions();
-        return o;
-    }
+
     function backupMsg(msg, isError) {
         var el = document.getElementById('backup-msg');
         el.style.color = isError ? '#991b1b' : '#166534';
         el.innerText = msg;
     }
+
     function createBackupCode() {
+        soundClick();
         try {
             var data = JSON.parse(JSON.stringify(s));
             delete data.apiKey;
-            data.curOrder = s.curOrder ? packOrder(s.curOrder, true) : null;
-            var payload = JSON.stringify({ s: data, orders: currentOrders.map(function(o) { return packOrder(o, false); }) });
+            var payload = JSON.stringify({ s: data, orders: currentOrders });
             var b64 = toB64(payload);
             var code = BACKUP_PREFIX + "." + b64 + "." + checksum(b64);
             var box = document.getElementById('inp-backup');
             box.value = code;
             box.focus(); box.select();
-            backupMsg("✅ Đã tạo mã sao lưu" + (s.curOrder ? " (kèm lô hàng đang làm dở)" : "") + ". Hãy bấm Sao chép và cất giữ cẩn thận!", false);
+            backupMsg("✅ Đã tạo mã sao lưu an toàn! Hãy bấm 'Sao chép' và lưu lại.", false);
         } catch (e) {
             backupMsg("❌ Không tạo được mã sao lưu: " + e.message, true);
         }
     }
+
     function copyBackupCode() {
+        soundClick();
         var box = document.getElementById('inp-backup');
-        if (!box.value.trim()) { backupMsg("❌ Chưa có mã. Hãy bấm 'Tạo mã' trước!", true); return; }
+        if (!box.value.trim()) { backupMsg("❌ Chưa có mã! Vui lòng bấm 'Tạo mã' trước.", true); return; }
         box.focus(); box.select();
-        var done = function() { backupMsg("📋 Đã sao chép mã vào bộ nhớ tạm!", false); };
+        var done = function() { backupMsg("📋 Đã sao chép mã sao lưu vào clipboard!", false); };
         var fallback = function() {
             try {
                 if (document.execCommand('copy')) { done(); return; }
             } catch (e) {}
-            backupMsg("⚠️ Trình duyệt chặn sao chép tự động. Mã đã được bôi đen, hãy nhấn giữ/Ctrl+C để sao chép.", true);
+            backupMsg("⚠️ Trình duyệt chặn tự động chép. Hãy dùng phím Ctrl+C để sao chép mã đã chọn.", true);
         };
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(box.value).then(done, fallback);
@@ -745,18 +2039,36 @@
             fallback();
         }
     }
-    function restoreBackupCode() {
-        var raw = document.getElementById('inp-backup').value.replace(/\s+/g, "");
-        if (!raw) { backupMsg("❌ Hãy dán mã sao lưu vào ô trên!", true); return; }
-        var parts = raw.split(".");
-        if (parts.length !== 3 || parts[0] !== BACKUP_PREFIX) { backupMsg("❌ Mã không đúng định dạng.", true); return; }
-        if (checksum(parts[1]) !== parts[2]) { backupMsg("❌ Mã bị thiếu hoặc sai ký tự (kiểm tra lại khi sao chép).", true); return; }
-        var obj;
-        try { obj = JSON.parse(fromB64(parts[1])); } catch (e) { backupMsg("❌ Không đọc được mã sao lưu.", true); return; }
-        if (!obj || typeof obj.s !== "object" || obj.s === null) { backupMsg("❌ Mã sao lưu không hợp lệ.", true); return; }
-        if (!confirm("Khôi phục sẽ GHI ĐÈ ván đang chơi. Tiếp tục?")) return;
 
-        var d = obj.s, ns = defaultState();
+    function restoreBackupCode() {
+        soundClick();
+        var raw = document.getElementById('inp-backup').value.replace(/\s+/g, "");
+        if (!raw) { backupMsg("❌ Vui lòng dán mã sao lưu vào ô văn bản phía trên!", true); return; }
+        var parts = raw.split(".");
+        if (parts.length !== 3 || (parts[0] !== BACKUP_PREFIX && parts[0] !== "VLS1")) {
+            backupMsg("❌ Mã sao lưu không đúng định dạng của trò chơi.", true);
+            return;
+        }
+        if (checksum(parts[1]) !== parts[2]) {
+            backupMsg("❌ Mã sao lưu bị sai hoặc thiếu ký tự (vui lòng kiểm tra lại).", true);
+            return;
+        }
+
+        var obj;
+        try { obj = JSON.parse(fromB64(parts[1])); } catch (e) {
+            backupMsg("❌ Không thể giải mã dữ liệu sao lưu.", true);
+            return;
+        }
+
+        if (!obj || typeof obj.s !== "object" || obj.s === null) {
+            backupMsg("❌ Cấu trúc mã sao lưu không hợp lệ.", true);
+            return;
+        }
+
+        if (!confirm("Khôi phục mã này sẽ ghi đè toàn bộ tiến trình chơi hiện tại. Tiếp tục?")) return;
+
+        var d = obj.s;
+        var ns = defaultState();
         ns.name = cleanText(d.name, "Huy Nguyễn", 30);
         ns.money = clampNum(d.money, ns.money, -1e12, 1e12);
         ns.rep = Math.round(clampNum(d.rep, ns.rep, 0, 100));
@@ -775,53 +2087,37 @@
         ns.resetCycleDays = Math.round(clampNum(d.resetCycleDays, 5, 1, 5));
         ns.lastSalary = cleanText(d.lastSalary, "", 10);
         ns.pid = (typeof d.pid === "string" && /^[a-z0-9]{8,20}$/.test(d.pid)) ? d.pid : genPid();
-        ns.courses = [];
-        if (Array.isArray(d.courses)) {
-            COURSES.forEach(function(c) { if (d.courses.indexOf(c.id) !== -1) ns.courses.push(c.id); });
-        }
-        ns.apiKey = s.apiKey; // giữ API Key đang dùng, không lấy từ mã
-
-        var cur = d.curOrder ? unpackOrder(d.curOrder) : null;
-        if (cur) {
-            ns.curOrder = cur;
-            ns.curStep = Math.round(clampNum(d.curStep, 0, 0, 5));
-            ns.correctCount = Math.round(clampNum(d.correctCount, 0, 0, 6));
-            ns.wrongCount = Math.round(clampNum(d.wrongCount, 0, 0, 1));
-        }
-
-        var orders = [];
-        if (Array.isArray(obj.orders)) {
-            for (var i = 0; i < obj.orders.length && i < 8; i++) {
-                var o = unpackOrder(obj.orders[i]);
-                if (o) orders.push(o);
-            }
-        }
+        ns.courses = Array.isArray(d.courses) ? d.courses : [];
+        ns.apiKey = s.apiKey;
 
         s = ns;
-        currentOrders = orders;
+        currentOrders = Array.isArray(obj.orders) && obj.orders.length > 0 ? obj.orders : [];
         if (currentOrders.length === 0) generateDiverseOrders();
 
-        document.getElementById('step-area').style.display = s.curOrder ? 'block' : 'none';
-        document.getElementById('list-area').style.display = s.curOrder ? 'none' : 'block';
-        if (s.curOrder) renderCurrentQuestion();
+        document.getElementById('step-area').style.display = 'none';
+        document.getElementById('list-area').style.display = 'block';
         renderOrders();
         renderCourses();
         renderPayroll();
         refreshUI();
         updateClockUI();
         startClock();
-        showNotice("📥 Đã khôi phục ván chơi của " + s.name + "!", false);
-        backupMsg("✅ Khôi phục thành công!" + (s.curOrder ? " Bạn đang ở câu " + (s.curStep + 1) + "/6 của lô hàng dở." : ""), false);
+        showNotice("📥 Đã khôi phục thành công ván chơi của nhân viên " + s.name + "!", false);
+        backupMsg("✅ Khôi phục thành công!", false);
     }
+
     function openRestoreFromLobby() {
+        soundClick();
         startGameNow();
         var box = document.getElementById('settings-box');
         box.style.display = 'block';
-        box.scrollIntoView();
+        box.scrollIntoView({ behavior: 'smooth' });
         document.getElementById('inp-backup').focus();
     }
 
-    // ================= BẢNG XẾP HẠNG (Google Sheets) =================
+    // =========================================================================
+    // BẢNG XẾP HẠNG TRỰC TUYẾN GOOGLE APPS SCRIPT
+    // =========================================================================
     var lbSort = "money";
     var lbConsent = false;
     var lastSubmitAt = 0;
@@ -834,78 +2130,89 @@
         for (var i = 0; i < arr.length; i++) out += chars.charAt(arr[i] % chars.length);
         return out;
     }
+
     function escHtml(v) {
         var map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
         return String(v).replace(/[&<>"']/g, function(c) { return map[c]; });
     }
+
     function lbMsg(msg, isError) {
         var el = document.getElementById('lb-msg');
         el.style.color = isError ? '#991b1b' : '#166534';
         el.innerText = msg;
     }
+
     function lbRequest(params) {
         var q = [];
         for (var k in params) q.push(encodeURIComponent(k) + "=" + encodeURIComponent(params[k]));
         var url = LEADERBOARD_URL + (LEADERBOARD_URL.indexOf("?") === -1 ? "?" : "&") + q.join("&");
         return fetch(url).then(function(r) { return r.json(); });
     }
-    function lbConfigured() {
-        if (LEADERBOARD_URL) return true;
-        lbMsg("⚙️ Bảng xếp hạng chưa được bật: hãy dán link Google Apps Script vào dòng LEADERBOARD_URL ở đầu phần <script>.", true);
-        return false;
-    }
+
     function setLbSort(mode) {
+        soundClick();
         lbSort = mode;
         document.getElementById('lb-sort-money').className = (mode === 'money') ? 'btn' : 'btn btn-sub';
         document.getElementById('lb-sort-done').className = (mode === 'done') ? 'btn' : 'btn btn-sub';
         loadLeaderboard();
     }
+
     function submitScore() {
-        if (!lbConfigured()) return;
+        soundClick();
         var now = Date.now();
-        if (now - lastSubmitAt < 15000) { lbMsg("⏳ Vui lòng chờ vài giây rồi gửi lại.", true); return; }
+        if (now - lastSubmitAt < 15000) {
+            lbMsg("⏳ Vui lòng chờ 15 giây trước khi gửi tiếp.", true);
+            return;
+        }
         if (!lbConsent) {
-            if (!confirm("Tên, tiền mặt và số lô hoàn thành của bạn sẽ hiển thị CÔNG KHAI trên bảng xếp hạng. Tiếp tục gửi?")) return;
+            if (!confirm("Tên nhân viên, tổng tiền và số lô hoàn thành sẽ được ghi nhận công khai. Xác nhận gửi?")) return;
             lbConsent = true;
         }
         lastSubmitAt = now;
-        lbMsg("⏳ Đang gửi điểm...", false);
+        lbMsg("⏳ Đang gửi dữ liệu lên bảng xếp hạng...", false);
         lbRequest({ action: "submit", pid: s.pid, name: s.name, money: Math.round(s.money), done: s.done })
             .then(function(res) {
-                if (!res || !res.ok) throw new Error((res && res.error) || "Máy chủ từ chối");
-                return loadLeaderboard("✅ Đã gửi điểm thành công!");
+                if (!res || !res.ok) throw new Error((res && res.error) || "Máy chủ từ chối kết nối");
+                return loadLeaderboard("✅ Đã cập nhật thành tích lên bảng xếp hạng!");
             })
             .catch(function(e) {
                 lastSubmitAt = 0;
                 lbMsg("❌ Gửi điểm thất bại: " + e.message, true);
             });
     }
+
     function loadLeaderboard(okMsg) {
-        if (!lbConfigured()) return Promise.resolve();
         if (typeof okMsg !== "string") okMsg = "";
-        if (!okMsg) lbMsg("⏳ Đang tải bảng xếp hạng...", false);
+        if (!okMsg) lbMsg("⏳ Đang tải bảng xếp hạng trực tuyến...", false);
         return lbRequest({ action: "top", sort: lbSort, pid: s.pid })
             .then(function(res) {
-                if (!res || !res.ok) throw new Error((res && res.error) || "Dữ liệu không hợp lệ");
+                if (!res || !res.ok) throw new Error((res && res.error) || "Dữ liệu máy chủ không hợp lệ");
                 var medals = ["🥇", "🥈", "🥉"];
                 var html = "";
                 for (var i = 0; i < res.list.length; i++) {
                     var r = res.list[i];
-                    html += '<tr class="' + (r.me ? 'cur-row' : '') + '"><td>' + (medals[r.rank - 1] || r.rank) + '</td>' +
+                    html += '<tr class="' + (r.me ? 'cur-row' : '') + '">' +
+                        '<td>' + (medals[r.rank - 1] || r.rank) + '</td>' +
                         '<td>' + escHtml(r.name) + (r.me ? ' (Bạn)' : '') + '</td>' +
-                        '<td>' + fmt(Number(r.money) || 0) + 'đ</td><td>' + (Number(r.done) || 0) + '</td></tr>';
+                        '<td>' + fmt(Number(r.money) || 0) + 'đ</td>' +
+                        '<td>' + (Number(r.done) || 0) + ' lô</td>' +
+                        '</tr>';
                 }
-                if (!html) html = '<tr><td colspan="4" style="text-align:center;">Chưa có ai trên bảng. Hãy là người đầu tiên!</td></tr>';
+                if (!html) html = '<tr><td colspan="4" style="text-align:center;">Chưa có dữ liệu người chơi. Hãy gửi điểm đầu tiên!</td></tr>';
                 document.getElementById('lb-body').innerHTML = html;
-                var mine = res.myRank ? " Hạng của bạn: #" + res.myRank + "/" + res.total + "." : (res.total ? " Bạn chưa có trên bảng (" + res.total + " người chơi)." : "");
-                lbMsg((okMsg ? okMsg + " " : "") + "🏆" + mine, false);
+                var mine = res.myRank ? " • Thứ hạng của bạn: #" + res.myRank + "/" + res.total : "";
+                lbMsg((okMsg ? okMsg + " " : "") + "🏆 Bảng thành tích toàn quốc" + mine, false);
             })
             .catch(function(e) {
-                lbMsg("❌ Không tải được bảng xếp hạng: " + e.message, true);
+                lbMsg("❌ Không tải được bảng xếp hạng (vui lòng kiểm tra mạng): " + e.message, true);
             });
     }
+
     function resetFullGame() {
-        if (confirm("Reset lại từ đầu?")) { location.reload(); }
+        soundClick();
+        if (confirm("Bạn có chắc chắn muốn thiết lập lại toàn bộ ván chơi về trạng thái ban đầu?")) {
+            location.reload();
+        }
     }
 </script>
 </body>

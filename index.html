@@ -2,7 +2,10 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>LOGISTICS OPS SIMULATOR 3D - HIỆN TRƯỜNG KHO TÂN TẠO ĐẾN CẢNG CÁT LÁI</title>
   
   <!-- Tailwind CSS & Phosphor Icons CDN -->
@@ -18,14 +21,37 @@
       #game-container { display: none !important; }
     }
     
-    * { box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
+    * { 
+      box-sizing: border-box; 
+      -webkit-touch-callout: none;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
       background: #020617;
       color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    #game-container {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
     }
 
     /* GIAO DIỆN ECUS5-VNACCS CLASSIC WINDOWS STYLING */
@@ -124,6 +150,10 @@
     <p class="text-xs md:text-sm text-slate-400 max-w-md leading-relaxed">
       Game mô phỏng buồng lái và đường vận chuyển Logistics KCN Tân Tạo - Cát Lái 3D yêu cầu tỷ lệ màn hình 16:9.
     </p>
+    <button onclick="toggleFullScreen()" class="mt-4 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-2xl active:scale-95 transition">
+      <i class="ph-bold ph-corners-out text-lg"></i>
+      <span>Bật Toàn Màn Hình Tràn Viền</span>
+    </button>
   </div>
 
   <!-- CONTAINER CHÍNH CỦA GAME -->
@@ -206,6 +236,12 @@
           <span>Hồ Sơ [F]</span>
         </button>
 
+        <!-- NÚT TOÀN MÀN HÌNH [FULLSCREEN] -->
+        <button id="btn-fullscreen" onclick="toggleFullScreen()" class="bg-gradient-to-r from-cyan-900/80 to-blue-900/80 hover:from-cyan-800 hover:to-blue-800 text-cyan-300 border border-cyan-500/50 px-2 py-0.5 rounded font-bold flex items-center gap-1 text-[11px] shadow transition" title="Bật/Tắt chế độ Toàn Màn Hình">
+          <i id="fullscreen-icon" class="ph-bold ph-corners-out"></i>
+          <span class="hidden sm:inline">Toàn Màn Hình</span>
+        </button>
+
         <!-- ÂM THANH TOGGLE -->
         <button id="btn-sound-toggle" onclick="toggleAudio()" class="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 text-xs transition" title="Bật/Tắt âm thanh">
           <i id="sound-icon" class="ph-bold ph-speaker-high"></i>
@@ -244,27 +280,40 @@
         © 2026 NGUYỄN MINH HUY • LOGISTICS OPS SIMULATOR 3D ULTRA • BẢO MẬT & BẢN QUYỀN ĐỘC QUYỀN
       </div>
 
-      <!-- OVERLAY TELEMETRY VÀ CHỈ DẪN NHIỆM VỤ HIỆN TRƯỜNG (GÓC TRÊN TRÁI) -->
-      <div class="absolute top-2 left-2 z-10 glass-panel p-2.5 rounded-xl text-[11px] max-w-sm pointer-events-none shadow-2xl border-l-4 border-l-cyan-400">
-        <div class="flex items-center justify-between text-slate-400 uppercase text-[9px] font-mono tracking-wider">
-          <span>HIỆN TRƯỜNG THỰC TẾ:</span>
-          <span id="telemetry-speed" class="text-cyan-400 font-bold text-xs">0 km/h</span>
+      <!-- OVERLAY TELEMETRY VÀ CHỈ DẪN NHIỆM VỤ HIỆN TRƯỜNG (GÓC TRÊN TRÁI - CÓ THỂ THU GỌN / ẨN) -->
+      <div id="mission-guide-panel" class="absolute top-2 left-2 z-10 glass-panel p-2 sm:p-2.5 rounded-xl text-[11px] max-w-[280px] sm:max-w-sm shadow-2xl border-l-4 border-l-cyan-400 select-none transition-all duration-300">
+        <div class="flex items-center justify-between text-slate-400 uppercase text-[9px] font-mono tracking-wider gap-2">
+          <span class="flex items-center gap-1.5 font-bold">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span>HIỆN TRƯỜNG:</span>
+            <span id="telemetry-speed" class="text-cyan-300 font-bold text-xs ml-1">0 km/h</span>
+          </span>
+          <div class="flex items-center gap-1.5">
+            <!-- NÚT ẨN / HIỆN BẢNG HƯỚNG DẪN -->
+            <button id="btn-toggle-guide" onclick="toggleMissionGuide()" class="px-2 py-0.5 rounded bg-slate-800/90 hover:bg-slate-700 text-cyan-300 hover:text-white text-[10px] font-mono flex items-center gap-1 border border-cyan-800/60 shadow active:scale-95 transition" title="Ẩn/Hiện bảng hướng dẫn nhiệm vụ">
+              <i id="guide-toggle-icon" class="ph-bold ph-eye-slash"></i>
+              <span id="guide-toggle-text">Ẩn HD</span>
+            </button>
+          </div>
         </div>
-        <div id="location-name" class="font-bold text-cyan-300 text-xs mt-0.5 flex items-center gap-1.5">
-          <i class="ph-fill ph-map-pin text-cyan-400"></i>
-          <span>Kho CFS Nông Sản 01 - KCN Tân Tạo (Bình Tân)</span>
-        </div>
-        <div id="current-task-desc" class="text-slate-200 mt-1.5 leading-snug font-sans bg-slate-950/70 p-2 rounded-lg border border-slate-800/80">
-          Xuống xe kiểm đếm Pallet nông sản tại Dock 01 & bấm chì seal niêm phong container.
-        </div>
-        <!-- GỢI Ý PHÍM TẮT -->
-        <div class="flex flex-wrap items-center gap-1.5 mt-2 text-[10px] text-slate-300 font-mono">
-          <span class="bg-slate-800/90 px-1.5 py-0.5 rounded text-amber-300 border border-slate-700">[W] TIẾN / [S] LÙI</span>
-          <span class="bg-slate-800/90 px-1.5 py-0.5 rounded text-cyan-300 border border-slate-700">[A-D] LÁI XE</span>
-          <span class="bg-slate-800/90 px-1.5 py-0.5 rounded text-emerald-300 border border-slate-700">[E] TÁC VỤ</span>
-          <span class="bg-slate-800/90 px-1.5 py-0.5 rounded text-purple-300 border border-slate-700">[C] GÓC NHÌN</span>
-          <span class="bg-slate-800/90 px-1.5 py-0.5 rounded text-blue-300 border border-slate-700">[M] BẢN ĐỒ</span>
-          <span class="bg-slate-800/90 px-1.5 py-0.5 rounded text-emerald-300 border border-slate-700">[B] KHO SA-TRAS</span>
+
+        <!-- PHẦN NỘI DUNG HƯỚNG DẪN CÓ THỂ THU GỌN -->
+        <div id="guide-content" class="transition-all duration-300">
+          <div id="location-name" class="font-bold text-cyan-300 text-xs mt-1 flex items-center gap-1.5">
+            <i class="ph-fill ph-map-pin text-cyan-400"></i>
+            <span>Kho CFS Nông Sản 01 - KCN Tân Tạo (Bình Tân)</span>
+          </div>
+          <div id="current-task-desc" class="text-slate-200 mt-1 leading-snug font-sans bg-slate-950/75 p-2 rounded-lg border border-slate-800/80 text-[10.5px]">
+            Xuống xe kiểm đếm Pallet nông sản tại Dock 01 & bấm chì seal niêm phong container.
+          </div>
+          <!-- GỢI Ý PHÍM TẮT (ẨN TRÊN MÀN HÌNH NHỎ ĐỂ THÔNG THOÁNG) -->
+          <div class="hidden sm:flex flex-wrap items-center gap-1 mt-1.5 text-[9px] text-slate-300 font-mono">
+            <span class="bg-slate-800/90 px-1 py-0.5 rounded text-amber-300 border border-slate-700">[W] TIẾN / [S] LÙI</span>
+            <span class="bg-slate-800/90 px-1 py-0.5 rounded text-cyan-300 border border-slate-700">[A-D] LÁI XE</span>
+            <span class="bg-slate-800/90 px-1 py-0.5 rounded text-emerald-300 border border-slate-700">[E] TÁC VỤ</span>
+            <span class="bg-slate-800/90 px-1 py-0.5 rounded text-purple-300 border border-slate-700">[C] GÓC NHÌN</span>
+            <span class="bg-slate-800/90 px-1 py-0.5 rounded text-blue-300 border border-slate-700">[M] BẢN ĐỒ</span>
+          </div>
         </div>
       </div>
 
@@ -279,7 +328,7 @@
         </div>
 
         <!-- BẢN ĐỒ MINI CANVAS VẼ ĐƯỜNG ĐI THỰC TẾ -->
-        <div class="relative w-44 h-24 bg-slate-950 rounded-lg overflow-hidden border border-slate-800">
+        <div class="relative w-40 sm:w-44 h-20 sm:h-24 bg-slate-950 rounded-lg overflow-hidden border border-slate-800">
           <canvas id="canvas-mini-map" width="176" height="96" class="w-full h-full"></canvas>
           <div class="absolute bottom-1 right-1 bg-slate-900/90 text-[8px] text-slate-400 px-1 rounded pointer-events-none">
             Google Maps
@@ -292,79 +341,87 @@
         </div>
       </div>
 
-      <!-- CỤM ĐIỀU KHIỂN LÁI XE TRỰC TIẾP (GÓC TRÁI DƯỚI: ĐÁNH LÁI TRÁI / PHẢI & JOYSTICK) -->
-      <div class="absolute bottom-3 left-3 z-20 flex items-center gap-2 select-none">
-        <!-- NÚT ĐÁNH LÁI TRÁI [A] -->
-        <button id="btn-steer-left"
-          onmousedown="setVirtualControl('steerLeft', true)" onmouseup="setVirtualControl('steerLeft', false)" onmouseleave="setVirtualControl('steerLeft', false)"
-          ontouchstart="setVirtualControl('steerLeft', true); event.preventDefault();" ontouchend="setVirtualControl('steerLeft', false); event.preventDefault();"
-          class="w-14 h-14 rounded-2xl glass-panel bg-slate-900/85 hover:bg-cyan-950/90 text-cyan-400 font-bold text-[10px] flex flex-col items-center justify-center border-2 border-cyan-500/50 shadow-2xl active:scale-95 transition">
-          <i class="ph-bold ph-arrow-fat-left text-2xl"></i>
-          <span class="text-[9px] font-black uppercase">Lái Trái [A]</span>
+      <!-- CỤM ĐIỀU KHIỂN LÁI XE TRỰC TIẾP (GÓC TRÁI - NẰM LÊN TRÊN TIỆN CHO NGÓN TAY CÁI) -->
+      <div id="controls-cluster-left" class="absolute bottom-24 sm:bottom-28 md:bottom-5 left-2 sm:left-4 z-20 flex flex-col items-start gap-1.5 select-none transition-all duration-200">
+        <!-- NÚT CHUYỂN ĐỔI ĐỘ CAO NÚT TRÊN ĐT (NẰM LÊN TRÊN THEO YÊU CẦU CỦA USER) -->
+        <button id="btn-control-height" onclick="cycleControlHeight()" class="px-2 py-0.5 rounded-lg glass-panel bg-slate-900/90 hover:bg-slate-800 text-[9px] font-mono text-cyan-300 border border-cyan-500/40 flex items-center gap-1 shadow-lg active:scale-95 transition" title="Đổi độ cao nút bấm: Cao (giữa màn hình) / Vừa / Thấp">
+          <i class="ph-bold ph-arrows-down-up text-amber-300"></i>
+          <span>Vị Trí Nút: <b id="ctrl-height-text" class="text-amber-400">Cao</b></span>
         </button>
 
-        <!-- NÚT ĐÁNH LÁI PHẢI [D] -->
-        <button id="btn-steer-right"
-          onmousedown="setVirtualControl('steerRight', true)" onmouseup="setVirtualControl('steerRight', false)" onmouseleave="setVirtualControl('steerRight', false)"
-          ontouchstart="setVirtualControl('steerRight', true); event.preventDefault();" ontouchend="setVirtualControl('steerRight', false); event.preventDefault();"
-          class="w-14 h-14 rounded-2xl glass-panel bg-slate-900/85 hover:bg-cyan-950/90 text-cyan-400 font-bold text-[10px] flex flex-col items-center justify-center border-2 border-cyan-500/50 shadow-2xl active:scale-95 transition">
-          <i class="ph-bold ph-arrow-fat-right text-2xl"></i>
-          <span class="text-[9px] font-black uppercase">Lái Phải [D]</span>
-        </button>
+        <div class="flex items-center gap-2">
+          <!-- NÚT ĐÁNH LÁI TRÁI [A] -->
+          <button id="btn-steer-left"
+            onmousedown="setVirtualControl('steerLeft', true)" onmouseup="setVirtualControl('steerLeft', false)" onmouseleave="setVirtualControl('steerLeft', false)"
+            ontouchstart="setVirtualControl('steerLeft', true); event.preventDefault();" ontouchend="setVirtualControl('steerLeft', false); event.preventDefault();"
+            class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl glass-panel bg-slate-900/90 hover:bg-cyan-950/90 text-cyan-400 font-bold text-[10px] flex flex-col items-center justify-center border-2 border-cyan-500/60 shadow-2xl active:scale-90 active:bg-cyan-600 active:text-white transition touch-none">
+            <i class="ph-bold ph-arrow-fat-left text-2xl"></i>
+            <span class="text-[9px] font-black uppercase">Trái [A]</span>
+          </button>
 
-        <!-- CẦN LÁI ẢO JOYSTICK DI ĐỘNG -->
-        <div id="mobile-joystick" class="w-20 h-20 rounded-full border-2 border-cyan-500/50 bg-slate-950/70 hidden sm:flex items-center justify-center touch-none shadow-2xl backdrop-blur">
-          <div id="stick-thumb" class="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-600 to-cyan-400 shadow-xl border border-white/50 flex items-center justify-center text-slate-950 font-bold">
-            <i class="ph-bold ph-arrows-out-cardinal text-xs"></i>
+          <!-- NÚT ĐÁNH LÁI PHẢI [D] -->
+          <button id="btn-steer-right"
+            onmousedown="setVirtualControl('steerRight', true)" onmouseup="setVirtualControl('steerRight', false)" onmouseleave="setVirtualControl('steerRight', false)"
+            ontouchstart="setVirtualControl('steerRight', true); event.preventDefault();" ontouchend="setVirtualControl('steerRight', false); event.preventDefault();"
+            class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl glass-panel bg-slate-900/90 hover:bg-cyan-950/90 text-cyan-400 font-bold text-[10px] flex flex-col items-center justify-center border-2 border-cyan-500/60 shadow-2xl active:scale-90 active:bg-cyan-600 active:text-white transition touch-none">
+            <i class="ph-bold ph-arrow-fat-right text-2xl"></i>
+            <span class="text-[9px] font-black uppercase">Phải [D]</span>
+          </button>
+
+          <!-- CẦN LÁI ẢO JOYSTICK DI ĐỘNG -->
+          <div id="mobile-joystick" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-cyan-500/50 bg-slate-950/70 hidden sm:flex items-center justify-center touch-none shadow-2xl backdrop-blur">
+            <div id="stick-thumb" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-cyan-600 to-cyan-400 shadow-xl border border-white/50 flex items-center justify-center text-slate-950 font-bold">
+              <i class="ph-bold ph-arrows-out-cardinal text-xs"></i>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- CỤM BÀN ĐẠP GA, PHANH, CÒI & TÁC VỤ (GÓC PHẢI DƯỚI) -->
-      <div class="absolute bottom-3 right-3 z-20 flex items-end gap-2 select-none">
+      <!-- CỤM BÀN ĐẠP GA, PHANH, CÒI & TÁC VỤ (GÓC PHẢI - NẰM LÊN TRÊN TIỆN CHO NGÓN TAY CÁI) -->
+      <div id="controls-cluster-right" class="absolute bottom-24 sm:bottom-28 md:bottom-5 right-2 sm:right-4 z-20 flex items-end gap-1.5 sm:gap-2 select-none transition-all duration-200">
         <!-- BÀN ĐẠP GA / TIẾN [W] -->
         <button id="btn-pedal-gas"
           onmousedown="setVirtualControl('gas', true)" onmouseup="setVirtualControl('gas', false)" onmouseleave="setVirtualControl('gas', false)"
           ontouchstart="setVirtualControl('gas', true); event.preventDefault();" ontouchend="setVirtualControl('gas', false); event.preventDefault();"
-          class="w-14 h-16 rounded-2xl bg-gradient-to-t from-emerald-700 to-emerald-500 hover:from-emerald-600 hover:to-emerald-400 text-white font-black text-[10px] flex flex-col items-center justify-center border-2 border-emerald-300 shadow-2xl active:scale-95 transition">
+          class="w-14 h-16 sm:w-16 sm:h-18 rounded-2xl bg-gradient-to-t from-emerald-700 to-emerald-500 hover:from-emerald-600 hover:to-emerald-400 text-white font-black text-[10px] flex flex-col items-center justify-center border-2 border-emerald-300 shadow-2xl active:scale-90 transition touch-none">
           <i class="ph-bold ph-caret-double-up text-2xl animate-pulse"></i>
-          <span class="text-[9px] font-black uppercase">Đạp Ga [W]</span>
+          <span class="text-[9px] font-black uppercase">Ga [W]</span>
         </button>
 
         <!-- BÀN ĐẠP PHANH / LÙI XE [S] -->
         <button id="btn-pedal-brake"
           onmousedown="setVirtualControl('brake', true)" onmouseup="setVirtualControl('brake', false)" onmouseleave="setVirtualControl('brake', false)"
           ontouchstart="setVirtualControl('brake', true); event.preventDefault();" ontouchend="setVirtualControl('brake', false); event.preventDefault();"
-          class="w-14 h-16 rounded-2xl bg-gradient-to-t from-rose-700 to-rose-500 hover:from-rose-600 hover:to-rose-400 text-white font-black text-[10px] flex flex-col items-center justify-center border-2 border-rose-300 shadow-2xl active:scale-95 transition">
+          class="w-14 h-16 sm:w-16 sm:h-18 rounded-2xl bg-gradient-to-t from-rose-700 to-rose-500 hover:from-rose-600 hover:to-rose-400 text-white font-black text-[10px] flex flex-col items-center justify-center border-2 border-rose-300 shadow-2xl active:scale-90 transition touch-none">
           <i class="ph-bold ph-caret-double-down text-2xl"></i>
           <span class="text-[9px] font-black uppercase">Phanh/Lùi [S]</span>
         </button>
 
         <!-- CỤM NÚT PHỤ: THẮNG HƠI, CÒI, CHẾ ĐỘ LÁI -->
-        <div class="flex flex-col gap-1.5">
-          <div class="flex gap-1.5">
+        <div class="flex flex-col gap-1 sm:gap-1.5">
+          <div class="flex gap-1 sm:gap-1.5">
             <!-- NÚT CÒI XE [H] -->
-            <button id="btn-horn" onclick="honkSound()" class="w-11 h-11 rounded-xl glass-panel bg-slate-900/85 hover:bg-amber-950/80 text-amber-300 font-bold text-[9px] flex flex-col items-center justify-center border border-amber-500/40 shadow-lg active:scale-95 transition">
+            <button id="btn-horn" onclick="honkSound()" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl glass-panel bg-slate-900/85 hover:bg-amber-950/80 text-amber-300 font-bold text-[9px] flex flex-col items-center justify-center border border-amber-500/40 shadow-lg active:scale-90 transition touch-none">
               <i class="ph-bold ph-megaphone text-base"></i>
               <span>Còi [H]</span>
             </button>
 
             <!-- NÚT PHANH / THẮNG HƠI [SPACE] -->
-            <button id="btn-brake" onmousedown="applyBrake(true)" onmouseup="applyBrake(false)" ontouchstart="applyBrake(true)" ontouchend="applyBrake(false)" class="w-11 h-11 rounded-xl glass-panel bg-slate-900/85 text-rose-400 font-bold text-[9px] flex flex-col items-center justify-center border border-rose-500/40 shadow-lg active:scale-95 transition">
+            <button id="btn-brake" onmousedown="applyBrake(true)" onmouseup="applyBrake(false)" ontouchstart="applyBrake(true)" ontouchend="applyBrake(false)" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl glass-panel bg-slate-900/85 text-rose-400 font-bold text-[9px] flex flex-col items-center justify-center border border-rose-500/40 shadow-lg active:scale-90 transition touch-none">
               <i class="ph-bold ph-hand-palm text-base"></i>
-              <span>Hãm [Space]</span>
+              <span>Hãm</span>
             </button>
           </div>
 
-          <div class="flex gap-1.5">
+          <div class="flex gap-1 sm:gap-1.5">
             <!-- NÚT CHUYỂN CAMERA [C] -->
-            <button id="btn-cam-toggle" onclick="toggleCameraView()" class="w-11 h-11 rounded-xl glass-panel bg-slate-900/85 text-sky-300 font-bold text-[9px] flex flex-col items-center justify-center border border-sky-500/40 shadow-lg active:scale-95 transition">
+            <button id="btn-cam-toggle" onclick="toggleCameraView()" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl glass-panel bg-slate-900/85 text-sky-300 font-bold text-[9px] flex flex-col items-center justify-center border border-sky-500/40 shadow-lg active:scale-90 transition touch-none">
               <i class="ph-bold ph-video-camera text-base"></i>
               <span>Góc [C]</span>
             </button>
 
             <!-- NÚT CHUYỂN CHẾ ĐỘ LÁI XE / ĐI BỘ -->
-            <button id="btn-drive-toggle" onclick="toggleDriveMode()" class="w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white font-bold text-[9px] flex flex-col items-center justify-center border border-cyan-400/50 shadow-xl active:scale-95 transition">
+            <button id="btn-drive-toggle" onclick="toggleDriveMode()" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white font-bold text-[9px] flex flex-col items-center justify-center border border-cyan-400/50 shadow-xl active:scale-90 transition touch-none">
               <i id="drive-mode-icon" class="ph-bold ph-steering-wheel text-lg"></i>
               <span id="drive-label">Lái Xe</span>
             </button>
@@ -372,9 +429,9 @@
         </div>
 
         <!-- NÚT CHÍNH: TƯƠNG TÁC TÁC NGHIỆP HIỆN TRƯỜNG [E] -->
-        <button id="btn-interact" onclick="handleInteraction()" class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-400 text-slate-950 font-black text-xs flex flex-col items-center justify-center border-2 border-white shadow-2xl active:scale-95 transition">
+        <button id="btn-interact" onclick="handleInteraction()" class="w-14 h-16 sm:w-16 sm:h-18 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-400 text-slate-950 font-black text-xs flex flex-col items-center justify-center border-2 border-white shadow-2xl active:scale-90 transition touch-none">
           <i class="ph-bold ph-hand-tap text-3xl"></i>
-          <span class="tracking-wider">[E] TÁC VỤ</span>
+          <span class="tracking-wider text-[10px] font-black">[E] TÁC VỤ</span>
         </button>
       </div>
 
@@ -417,7 +474,7 @@
           <canvas id="canvas-full-map" class="w-full flex-1"></canvas>
           
           <!-- OVERLAY TỌA ĐỘ VỆ TINH HUD -->
-          <div class="absolute top-2 left-2 z-10 glass-panel bg-slate-950/80 border border-cyan-500/40 px-2.5 py-1 rounded text-[10px] font-mono text-cyan-300 pointer-events-none flex items-center gap-2">
+          <div id="map-satellite-telemetry" class="absolute top-2 left-2 z-10 glass-panel bg-slate-950/80 border border-cyan-500/40 px-2.5 py-1 rounded text-[10px] font-mono text-cyan-300 pointer-events-none flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
             <span>SAT-ORBIT: SENTINEL-2 HD (0.5M/PX)</span>
             <span class="text-slate-400">|</span>
@@ -1177,9 +1234,9 @@
 
     </div>
 
-    <!-- THANH TIẾN ĐỘ 7 CHẶNG HIỆN TRƯỜNG DƯỚI CÙNG (PROGRESS BAR 16:9) -->
-    <footer class="h-10 bg-slate-950 border-t border-cyan-800/40 px-2 flex items-center justify-between text-[11px] z-30 select-none">
-      <div class="flex items-center gap-1 overflow-x-auto custom-scroll w-full py-1">
+    <!-- THANH TIẾN ĐỘ 7 CHẶNG HIỆN TRƯỜNG DƯỚI CÙNG (PROGRESS BAR 16:9 - CÓ THỂ THU GỌN) -->
+    <footer id="game-footer" class="h-10 bg-slate-950/95 border-t border-cyan-800/40 px-2 flex items-center justify-between text-[11px] z-30 select-none transition-all duration-300">
+      <div id="footer-steps-container" class="flex items-center gap-1 overflow-x-auto custom-scroll w-full py-1">
         <button id="step-btn-1" onclick="jumpToStep(1)" class="px-2.5 py-0.5 rounded bg-cyan-600 text-white font-bold whitespace-nowrap shadow flex items-center gap-1 transition">
           <i class="ph-bold ph-warehouse"></i> 1. Kho Tân Tạo
         </button>
@@ -1208,6 +1265,9 @@
           <i class="ph-bold ph-anchor"></i> 7. Cổng Cát Lái & PnL
         </button>
       </div>
+      <button id="btn-toggle-footer" onclick="toggleFooterBar()" class="ml-1 px-1.5 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-700/60 text-[9px] font-mono whitespace-nowrap transition" title="Ẩn/Hiện thanh chặng">
+        <i id="footer-toggle-icon" class="ph-bold ph-caret-down"></i>
+      </button>
     </footer>
 
   <!-- ================= MODAL CẢNH BÁO BẢO VỆ BẢN QUYỀN - NGUYỄN MINH HUY ================= -->
@@ -4155,6 +4215,7 @@
 
       if (code === 'KeyC' || key === 'c') toggleCameraView();
       if (code === 'KeyG' || key === 'g') toggleGodMode();
+      if (code === 'KeyI' || key === 'i') toggleMissionGuide();
       if (code === 'KeyM' || key === 'm') toggleGpsMapModal();
       if (code === 'KeyB' || key === 'b') toggleSatrasModal();
       if (code === 'KeyF' || key === 'f') toggleBriefcase();
@@ -4200,6 +4261,126 @@
       const dIcon = document.getElementById('drive-mode-icon');
       if (dIcon) dIcon.className = gameState.driveMode ? "ph-bold ph-person-simple-walk text-xl" : "ph-bold ph-truck text-xl";
       showHUDToast(gameState.driveMode ? "CHẾ ĐỘ LÁI XE: Bấm [W] đạp ga, [S] lùi, [A/D] rẽ lái!" : "CHẾ ĐỘ ĐI BỘ: Xuống xe kiểm tra chứng từ & seal container.");
+    }
+
+    /* =========================================================
+       7.1 TỐI ƯU TOÀN MÀN HÌNH, ĐỘ CAO NÚT BẤM & ẨN HƯỚNG DẪN
+       ========================================================= */
+
+    // 1. ẨN / HIỆN BẢNG HƯỚNG DẪN NHIỆM VỤ HIỆN TRƯỜNG
+    function toggleMissionGuide() {
+      soundEngine.init();
+      const guideContent = document.getElementById('guide-content');
+      const toggleIcon = document.getElementById('guide-toggle-icon');
+      const toggleText = document.getElementById('guide-toggle-text');
+      if (!guideContent) return;
+
+      const isHidden = guideContent.classList.contains('hidden');
+      if (isHidden) {
+        guideContent.classList.remove('hidden');
+        if (toggleIcon) toggleIcon.className = "ph-bold ph-eye-slash";
+        if (toggleText) toggleText.innerText = "Ẩn HD";
+        showHUDToast("HIỆN HƯỚNG DẪN: Bảng thông tin nhiệm vụ và phím tắt đã hiển thị.");
+      } else {
+        guideContent.classList.add('hidden');
+        if (toggleIcon) toggleIcon.className = "ph-bold ph-eye";
+        if (toggleText) toggleText.innerText = "Hiện HD";
+        showHUDToast("ĐÃ ẨN BẢNG HƯỚNG DẪN: Màn hình thông thoáng tối đa!");
+      }
+    }
+
+    // 2. CHẾ ĐỘ TOÀN MÀN HÌNH (FULLSCREEN MOBILE & DESKTOP)
+    function toggleFullScreen() {
+      soundEngine.init();
+      const docEl = document.documentElement;
+      const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+
+      if (!isFullscreen) {
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen().catch(() => {});
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        }
+        showHUDToast("TOÀN MÀN HÌNH: Đã kích hoạt góc nhìn tràn viền tối ưu!");
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    }
+
+    function updateFullscreenIcon() {
+      const icon = document.getElementById('fullscreen-icon');
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      if (icon) {
+        icon.className = isFs ? "ph-bold ph-corners-in" : "ph-bold ph-corners-out";
+      }
+    }
+    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+
+    // 3. ĐIỀU CHỈNH ĐỘ CAO CỤM NÚT ĐIỀU KHIỂN TRÊN ĐIỆN THOẠI (NẰM LÊN TRÊN DỄ BẤM)
+    const CONTROL_HEIGHT_PRESETS = [
+      { name: 'Cao', desc: 'Giữa màn hình (Thuận tiện ngón tay cái khi cầm ngang)', classNames: 'bottom-24 sm:bottom-28 md:bottom-5' },
+      { name: 'Rất Cao', desc: 'Trên cao (Tránh hoàn toàn thanh điều hướng web)', classNames: 'bottom-36 sm:bottom-40 md:bottom-12' },
+      { name: 'Thấp', desc: 'Sát đáy màn hình (Dành cho laptop/màn hình lớn)', classNames: 'bottom-3 sm:bottom-4 md:bottom-3' }
+    ];
+    let currentControlHeightIndex = 0; // Mặc định ở mức 'Cao' theo đúng yêu cầu user!
+
+    function setControlHeight(index) {
+      currentControlHeightIndex = (index + CONTROL_HEIGHT_PRESETS.length) % CONTROL_HEIGHT_PRESETS.length;
+      const preset = CONTROL_HEIGHT_PRESETS[currentControlHeightIndex];
+      const leftC = document.getElementById('controls-cluster-left');
+      const rightC = document.getElementById('controls-cluster-right');
+      const lbl = document.getElementById('ctrl-height-text');
+
+      if (leftC && rightC) {
+        CONTROL_HEIGHT_PRESETS.forEach(p => {
+          p.classNames.split(' ').forEach(cls => {
+            leftC.classList.remove(cls);
+            rightC.classList.remove(cls);
+          });
+        });
+        preset.classNames.split(' ').forEach(cls => {
+          leftC.classList.add(cls);
+          rightC.classList.add(cls);
+        });
+      }
+
+      if (lbl) lbl.innerText = preset.name;
+      try { localStorage.setItem('logistics_ctrl_height_idx', currentControlHeightIndex); } catch(e) {}
+    }
+
+    function cycleControlHeight() {
+      soundEngine.init();
+      setControlHeight(currentControlHeightIndex + 1);
+      const preset = CONTROL_HEIGHT_PRESETS[currentControlHeightIndex];
+      showHUDToast(`VỊ TRÍ NÚT BẤM: [${preset.name.toUpperCase()}] - ${preset.desc}`);
+    }
+
+    // 4. ẨN / HIỆN THANH 7 CHẶNG HIỆN TRƯỜNG DƯỚI CÙNG
+    function toggleFooterBar() {
+      soundEngine.init();
+      const footer = document.getElementById('game-footer');
+      const icon = document.getElementById('footer-toggle-icon');
+      const steps = document.getElementById('footer-steps-container');
+      if (!footer || !steps) return;
+
+      const isCollapsed = steps.classList.contains('hidden');
+      if (isCollapsed) {
+        steps.classList.remove('hidden');
+        footer.classList.remove('h-6');
+        footer.classList.add('h-10');
+        if (icon) icon.className = "ph-bold ph-caret-down";
+      } else {
+        steps.classList.add('hidden');
+        footer.classList.remove('h-10');
+        footer.classList.add('h-6');
+        if (icon) icon.className = "ph-bold ph-caret-up";
+        showHUDToast("ĐÃ THU GỌN THANH CHẶNG: Không gian quan sát rộng tối đa!");
+      }
     }
 
     // BIẾN ĐIỀU KHIỂN XOAY CAMERA 360 ĐỘ (ORBIT DRAG) & GÓC NHÌN CHÚA (GOD MODE NOCLIP)
@@ -4420,7 +4601,7 @@
         const lookAtZ = godCamPos.z + fwdZ * 50;
         camera.lookAt(lookAtX, lookAtY, lookAtZ);
 
-        const altEl = document.getElementById('god-altitude-text') || document.getElementById('god-alt-label');
+        const altEl = document.getElementById('god-alt-label');
         if (altEl) {
           altEl.innerText = `Độ cao: ${Math.round(godCamPos.y)}m (X:${Math.round(godCamPos.x)}, Z:${Math.round(godCamPos.z)})`;
         }
@@ -5751,6 +5932,11 @@
       try {
         initThreeJS();
         initOrbitControls();
+        try {
+          const savedH = localStorage.getItem('logistics_ctrl_height_idx');
+          if (savedH !== null) setControlHeight(parseInt(savedH, 10));
+          else setControlHeight(0);
+        } catch(e) {}
         loadScenario(0);
 
         gameState.driveMode = true;
